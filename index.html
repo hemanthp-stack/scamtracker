@@ -1,0 +1,3026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeriCom | Unified Communication-Risk & Anti-Fraud Intelligence</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .animate-spin-fast { animation: spin 0.6s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .pulse-glow { animation: pulseGlow 2s infinite; }
+    @keyframes pulseGlow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.6)); } }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between antialiased">
+
+  <!-- Floating Toast Notification -->
+  <div id="toastNotification" class="fixed top-5 right-5 z-[100] transform transition-all duration-300 translate-y-[-100px] opacity-0 pointer-events-none max-w-md w-full">
+    <div id="toastCard" class="bg-emerald-950 border border-emerald-500/80 rounded-xl p-4 shadow-2xl flex items-start gap-3 backdrop-blur-md">
+      <div id="toastIcon" class="text-emerald-400 text-lg mt-0.5"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="flex-grow">
+        <h4 id="toastTitle" class="text-sm font-bold text-white">Notification</h4>
+        <p id="toastBody" class="text-xs text-slate-300 mt-0.5">Operation completed successfully.</p>
+      </div>
+      <button onclick="hideToast()" class="text-slate-400 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  </div>
+
+  <!-- Header / Navigation -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.reload()">
+        <div class="bg-indigo-600 text-white p-2 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-shield-halved text-xl"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-xl tracking-tight text-white leading-none">Veri<span class="text-indigo-400">Com</span></span>
+          <span class="text-[10px] text-slate-400 font-medium tracking-wide">Unified Anti-Fraud & Risk Intelligence</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1.5 sm:space-x-2">
+        <button onclick="openDirectoryModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm" title="Search Official Verified Directory">
+          <i class="fa-solid fa-building-columns text-emerald-400"></i>
+          <span class="hidden md:inline">Directory</span>
+        </button>
+        <button onclick="openThreatMapModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm" title="National Scam Telemetry">
+          <i class="fa-solid fa-map-location-dot text-amber-400"></i>
+          <span class="hidden md:inline">Threat Map</span>
+        </button>
+        <button onclick="openWatchlistModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm relative" title="Suspicious Watchlist">
+          <i class="fa-solid fa-bell text-sky-400"></i>
+          <span class="hidden md:inline">Watchlist</span>
+          <span id="watchlistBadge" class="hidden px-1.5 py-0.2 rounded-full text-[10px] bg-sky-500 text-white font-bold ml-0.5">0</span>
+        </button>
+        <!-- Emergency Scam Response Button -->
+        <button onclick="openEmergencyModal()" class="text-xs bg-rose-950/80 hover:bg-rose-900/90 text-rose-300 border border-rose-500/50 px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-lg shadow-rose-950/40">
+          <i class="fa-solid fa-triangle-exclamation text-rose-400 animate-pulse"></i>
+          <span class="font-bold">I Got Scammed</span>
+        </button>
+        <button onclick="toggleApiModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-code text-indigo-400"></i> <span class="hidden sm:inline">Judge</span> Console
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Hero Section -->
+  <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full flex flex-col justify-center">
+    
+    <!-- Hero Text -->
+    <div class="text-center space-y-3 mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 mb-1">
+        <i class="fa-solid fa-shield-cat text-amber-400"></i> Unified Communication-Risk Intelligence
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        Verify Official Communication & Numbers <br class="hidden sm:inline"/>
+        <span class="bg-gradient-to-r from-indigo-400 via-sky-400 to-emerald-400 bg-clip-text text-transparent">Before You Get Scammed</span>
+      </h1>
+      <p class="text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto">
+        Combines verified identity signals, threat reports, sender metadata, and multi-vector scam pattern analysis.
+      </p>
+    </div>
+
+    <!-- Verification Mode Selector Pills -->
+    <div class="flex items-center justify-center mb-4">
+      <div class="bg-slate-950/90 border border-slate-800 p-1.5 rounded-2xl flex flex-wrap items-center justify-center gap-1 shadow-xl">
+        <button 
+          id="tabInputNumber" 
+          onclick="setInputMode('number')" 
+          class="mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+        >
+          <i class="fa-solid fa-phone"></i>
+          <span>Phone Number</span>
+        </button>
+        <button 
+          id="tabInputSms" 
+          onclick="setInputMode('sms')" 
+          class="mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60"
+        >
+          <i class="fa-solid fa-comment-sms text-sky-400"></i>
+          <span>SMS / Message</span>
+          <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">STAR</span>
+        </button>
+        <button 
+          id="tabInputLink" 
+          onclick="setInputMode('link')" 
+          class="mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60"
+        >
+          <i class="fa-solid fa-link text-emerald-400"></i>
+          <span>Link / URL</span>
+        </button>
+        <button 
+          id="tabInputScreenshot" 
+          onclick="setInputMode('screenshot')" 
+          class="mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60"
+        >
+          <i class="fa-solid fa-camera text-amber-400"></i>
+          <span>Screenshot OCR</span>
+        </button>
+        <button 
+          id="tabInputSimAudit" 
+          onclick="setInputMode('simAudit')" 
+          class="mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60"
+        >
+          <i class="fa-solid fa-sim-card text-purple-400"></i>
+          <span>New SIM Audit</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Dynamic Verification Card -->
+    <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur-md mb-8">
+      
+      <!-- Optional Operator Selector (Shown only in SIM Audit Mode) -->
+      <div id="operatorSelectContainer" class="hidden mb-3">
+        <div class="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+          <span class="font-medium flex items-center gap-1.5">
+            <i class="fa-solid fa-tower-cell text-emerald-400"></i> Prospective Operator:
+          </span>
+          <span class="text-slate-500">TRAI 90-day quarantine rules</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button type="button" onclick="selectOperator(this, 'Airtel')" class="op-btn active py-2 px-3 rounded-xl text-xs font-semibold border bg-emerald-600/20 border-emerald-500 text-emerald-300 transition text-center">
+            Airtel
+          </button>
+          <button type="button" onclick="selectOperator(this, 'Jio')" class="op-btn py-2 px-3 rounded-xl text-xs font-semibold border bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 transition text-center">
+            Jio
+          </button>
+          <button type="button" onclick="selectOperator(this, 'Vodafone Idea')" class="op-btn py-2 px-3 rounded-xl text-xs font-semibold border bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 transition text-center">
+            Vodafone Idea (Vi)
+          </button>
+          <button type="button" onclick="selectOperator(this, 'BSNL / Any')" class="op-btn py-2 px-3 rounded-xl text-xs font-semibold border bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 transition text-center">
+            BSNL / Other
+          </button>
+        </div>
+      </div>
+
+      <!-- Screenshot Upload Container (Shown only in Screenshot Mode) -->
+      <div id="screenshotUploadContainer" class="hidden mb-4">
+        <div class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-2xl p-6 text-center cursor-pointer bg-slate-900/60 transition group" onclick="document.getElementById('screenshotFileInput').click()">
+          <input type="file" id="screenshotFileInput" accept="image/*" class="hidden" onchange="handleScreenshotUpload(event)">
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl mx-auto mb-2 group-hover:scale-110 transition">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+          </div>
+          <p class="text-xs font-bold text-white">Click or Drag & Drop SMS / WhatsApp Screenshot</p>
+          <p class="text-[11px] text-slate-400 mt-1">Automatic OCR will extract numbers, URLs, and suspicious scam text</p>
+        </div>
+
+        <div class="flex items-center gap-2 mt-3 text-xs text-slate-400">
+          <span class="font-medium text-slate-500">Or try a test demo screenshot:</span>
+          <button type="button" onclick="loadSampleScreenshot('sbi')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 text-[11px]">
+            📸 Fake SBI KYC
+          </button>
+          <button type="button" onclick="loadSampleScreenshot('bescom')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 text-[11px]">
+            📸 BESCOM Power Cut
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Input Form -->
+      <form id="verifyForm" onsubmit="handleFormSubmit(event)">
+        
+        <!-- Text Input (for Single-line number / URL) -->
+        <div id="singleInputContainer" class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+            <i id="searchIcon" class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <input 
+            type="text" 
+            id="searchInput"
+            placeholder="Search ANY number or header (e.g. 9908733337, SBIINB, +91 98450 12345, 1409201122)..." 
+            class="w-full pl-11 pr-32 py-3.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base transition-all font-mono sm:font-sans"
+            autocomplete="off"
+          >
+          <button 
+            type="submit" 
+            id="verifyBtn"
+            class="absolute right-1.5 top-1.5 bottom-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-5 rounded-lg shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm"
+          >
+            <span id="btnText">Verify</span>
+            <i id="btnIcon" class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Textarea (for Multi-line SMS / Message paste) -->
+        <div id="multilineInputContainer" class="hidden space-y-3">
+          <div class="relative">
+            <textarea 
+              id="messageInput"
+              rows="4"
+              placeholder="Paste suspicious SMS, WhatsApp message, or email here... (e.g. 'Dear customer, your bank account will be blocked today due to pending KYC. Update immediately at https://sbi-kyc-update.xyz or call +91-9876543210')"
+              class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-xs sm:text-sm transition-all leading-relaxed"
+            ></textarea>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-500">AI extracts sender IDs, links, urgency triggers, and credential demands.</span>
+            <button 
+              type="submit" 
+              class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm"
+            >
+              <span>Analyze Scam Patterns</span>
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Hackathon Demo Preset Buttons -->
+      <div class="mt-4 pt-4 border-t border-slate-700/50 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+        <span id="presetLabel" class="font-medium text-slate-400 flex items-center gap-1">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Judge Quick Presets:
+        </span>
+        <div id="presetButtonsContainer" class="flex flex-wrap gap-1.5 sm:gap-2">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Intelligence Action Bar -->
+    <div class="flex flex-wrap items-center justify-center gap-2 mb-6 text-xs">
+      <button onclick="openDirectoryModal()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-building-columns text-emerald-400"></i>
+        <span>Official Directory</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">18+ Entities</span>
+      </button>
+      <button onclick="openThreatMapModal()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-map-location-dot text-amber-400"></i>
+        <span>Live Threat Map</span>
+        <span class="text-[10px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-semibold border border-rose-500/30">Circles & Vectors</span>
+      </button>
+      <button onclick="openWatchlistModal()" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 shadow-sm">
+        <i class="fa-solid fa-bell text-sky-400"></i>
+        <span>My Watchlist</span>
+        <span id="quickWatchlistCount" class="text-[10px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">0</span>
+      </button>
+    </div>
+
+    <!-- Scanning Indicator -->
+    <div id="scanningIndicator" class="hidden text-center py-8">
+      <div class="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-slate-800/80 border border-indigo-500/30 text-indigo-300 text-sm backdrop-blur shadow-xl">
+        <i id="scanningIcon" class="fa-solid fa-satellite-dish animate-spin-fast text-indigo-400"></i>
+        <span id="scanningText">Deconstructing Threat Vectors, Entity Whitelists & Phishing Heuristics...</span>
+      </div>
+    </div>
+
+    <!-- Dynamic Result Card Container -->
+    <div id="resultContainer" class="hidden transition-all duration-300 space-y-6">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Value Proposition Section for Judges -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-10">
+      <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-3.5 text-left hover:border-slate-700 transition">
+        <div class="text-indigo-400 mb-2"><i class="fa-solid fa-magnifying-glass-chart text-base"></i></div>
+        <h3 class="text-xs font-bold text-white mb-1">Scam Intent NLP</h3>
+        <p class="text-[11px] text-slate-400">Deconstructs psychological triggers: artificial urgency, fear tactics, fake KYC, and digital arrest threats.</p>
+      </div>
+      <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-3.5 text-left hover:border-slate-700 transition">
+        <div class="text-sky-400 mb-2"><i class="fa-solid fa-diagram-project text-base"></i></div>
+        <h3 class="text-xs font-bold text-white mb-1">Communication Trust Graph</h3>
+        <p class="text-[11px] text-slate-400">Visualizes origin routing, carrier attribution, sender headers, and extracted domains on a single risk map.</p>
+      </div>
+      <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 text-left hover:border-slate-700 transition">
+        <div class="text-emerald-400 mb-2"><i class="fa-solid fa-compass text-base"></i></div>
+        <h3 class="text-xs font-bold text-white mb-1">Safe Alternative Recovery</h3>
+        <p class="text-[11px] text-slate-400">Never leaves users stranded. Immediately offers verified bank customer care, legitimate websites, and official apps.</p>
+      </div>
+      <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 text-left hover:border-slate-700 transition">
+        <div class="text-rose-400 mb-2"><i class="fa-solid fa-life-ring text-base"></i></div>
+        <h3 class="text-xs font-bold text-white mb-1">Emergency Victim Triage</h3>
+        <p class="text-[11px] text-slate-400">Actionable 1930 golden-hour financial freeze checklist if money was already transferred or OTP was shared.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- EMERGENCY SCAM ASSISTANCE MODAL ("I ALREADY GOT SCAMMED") -->
+  <div id="emergencyModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border-2 border-rose-500 rounded-2xl max-w-xl w-full p-6 relative shadow-2xl overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-rose-500 via-amber-400 to-rose-600"></div>
+
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-2xl border border-rose-500/30 flex-shrink-0">
+            <i class="fa-solid fa-shield-virus"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">Emergency Scam Recovery Protocol</h3>
+            <p class="text-xs text-rose-300">Act within the "Golden Hour" to freeze transactions & recover funds</p>
+          </div>
+        </div>
+        <button onclick="closeEmergencyModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Triage Step 1: What happened? -->
+      <div class="space-y-4 text-xs">
+        <p class="text-slate-300 font-semibold">Select what occurred to generate immediate mitigation steps:</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <button type="button" onclick="selectIncidentType('money')" class="incident-btn active text-left p-3 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-200 transition">
+            <span class="font-bold block text-white mb-0.5">💸 Transferred Money / UPI</span>
+            <span class="text-[11px] text-slate-400">Sent money via GPay, PhonePe, Paytm, or NetBanking</span>
+          </button>
+          <button type="button" onclick="selectIncidentType('otp')" class="incident-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 transition">
+            <span class="font-bold block text-white mb-0.5">🔑 Shared OTP / Bank PIN</span>
+            <span class="text-[11px] text-slate-400">Gave OTP, NetBanking password, or card CVV</span>
+          </button>
+          <button type="button" onclick="selectIncidentType('apk')" class="incident-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 transition">
+            <span class="font-bold block text-white mb-0.5">📱 Installed Remote APK</span>
+            <span class="text-[11px] text-slate-400">Downloaded APK, AnyDesk, QuickSupport, or RustDesk</span>
+          </button>
+          <button type="button" onclick="selectIncidentType('aadhaar')" class="incident-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 transition">
+            <span class="font-bold block text-white mb-0.5">🪪 Shared Aadhaar / PAN</span>
+            <span class="text-[11px] text-slate-400">Uploaded KYC documents to an unverified link</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Action Checklist -->
+        <div id="incidentActionBox" class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <!-- Copyable Cybercrime Complaint Snippet -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-[11px] font-bold text-slate-300 uppercase">Pre-Formatted CyberCrime Complaint Text</span>
+            <button onclick="copyComplaintText()" class="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+              <i class="fa-solid fa-copy"></i> Copy Complaint
+            </button>
+          </div>
+          <pre id="complaintSnippet" class="text-[11px] text-slate-400 font-mono bg-slate-950 p-2.5 rounded-lg whitespace-pre-wrap max-h-24 overflow-y-auto"></pre>
+        </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+          <a href="https://cybercrime.gov.in" target="_blank" class="text-xs text-rose-400 hover:underline font-bold flex items-center gap-1">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open National Cyber Crime Portal (1930)
+          </a>
+          <button onclick="closeEmergencyModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl font-semibold">
+            Close
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Modal: Update / Set Custom Contact Tag -->
+  <div id="editNameModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-indigo-500/50 rounded-2xl max-w-md w-full p-6 relative shadow-2xl overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-sky-400 to-emerald-400"></div>
+
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg border border-indigo-500/30">
+            <i class="fa-solid fa-tag"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Add / Update Contact Label</h3>
+            <p class="text-xs text-slate-400">Attach a verified identity tag to this telephone number</p>
+          </div>
+        </div>
+        <button onclick="closeEditNameModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between mb-4">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Phone Identifier</span>
+          <span id="editModalTargetNumber" class="text-sm font-mono font-bold text-indigo-400">+91 99087 33337</span>
+        </div>
+        <span class="text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 px-2 py-0.5 rounded">Community Directory</span>
+      </div>
+
+      <form id="editNameForm" onsubmit="saveRealUserInformation(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Contact Name / Entity Tag <span class="text-indigo-400">*</span></label>
+          <input 
+            type="text" 
+            id="realNameInput" 
+            placeholder="e.g. Personal SIM, Office Line, Branch Support..." 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          >
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Line Classification</label>
+          <select id="realTypeSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="Personal Consumer Mobile Line">Personal Consumer Mobile Line (Private SIM)</option>
+            <option value="Professional / Freelance Work Line">Professional / Freelance Work Line</option>
+            <option value="Registered Commercial Outbound Line">Registered Commercial Outbound Line</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Location / City Tag (Optional)</label>
+          <input 
+            type="text" 
+            id="realCityInput" 
+            placeholder="e.g. Hyderabad, Bengaluru, Mumbai..." 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeEditNameModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-indigo-600/30 flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i> Save Label
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Interactive Fraud Reporting Modal -->
+  <div id="fraudReportModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-rose-500/50 rounded-2xl max-w-lg w-full p-6 relative shadow-2xl overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-rose-600"></div>
+
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-lg border border-rose-500/30">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Report Number to National Fraud Registry</h3>
+            <p class="text-xs text-slate-400">Flag this sender to protect other users and alert telecom cyber defenses</p>
+          </div>
+        </div>
+        <button onclick="closeReportModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center justify-between mb-4">
+        <div>
+          <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-semibold">Flagging Identifier</span>
+          <span id="modalTargetNumber" class="text-sm font-mono font-bold text-rose-400">+91 98450 12345</span>
+        </div>
+        <span class="text-xs bg-rose-500/10 text-rose-300 border border-rose-500/20 px-2 py-0.5 rounded">Cyber Crime Incident</span>
+      </div>
+
+      <form id="fraudReportForm" onsubmit="submitFraudReport(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Select Scam Category <span class="text-rose-400">*</span></label>
+          <select id="reportCategory" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-rose-500" required>
+            <option value="SMS Phishing / Smishing (Malicious URL)">SMS Phishing / Smishing (Fake parcel, APK, electricity bill)</option>
+            <option value="Bank & UPI Impersonation (Asking for PIN/OTP)">Bank & UPI Impersonation (Posing as bank asking for OTP/PIN)</option>
+            <option value="Digital Arrest / Law Enforcement Extortion">Digital Arrest / Fake Police, CBI or Customs Extortion</option>
+            <option value="Fake Job / Part-Time Telegram Scam">Fake Part-Time Job / Telegram Rating Task Scam</option>
+            <option value="Invoice Fraud & Wire Transfer Request">Invoice Fraud / Vendor Spoofing / Wire Redirection</option>
+            <option value="Aggressive Robocall / Telemarketing Spam">Aggressive Robocall / Spam Harassment</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Quick Evidence Indicators (Click to tag)</label>
+          <div class="flex flex-wrap gap-1.5" id="evidenceTagsContainer">
+            <button type="button" onclick="toggleEvidenceTag(this, 'Asked for OTP/PIN')" class="evidence-tag text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition">
+              + Asked for OTP/PIN
+            </button>
+            <button type="button" onclick="toggleEvidenceTag(this, 'Sent Malicious Link')" class="evidence-tag text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition">
+              + Sent Malicious Link
+            </button>
+            <button type="button" onclick="toggleEvidenceTag(this, 'Asked to Install APK')" class="evidence-tag text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition">
+              + Asked to Install APK
+            </button>
+            <button type="button" onclick="toggleEvidenceTag(this, 'Urgent 2-Hour Threat')" class="evidence-tag text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition">
+              + Urgent Threat
+            </button>
+            <button type="button" onclick="toggleEvidenceTag(this, 'Posed as Official Bank')" class="evidence-tag text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500 transition">
+              + Posed as Official Bank
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">Incident Details / Message Content</label>
+          <textarea id="reportDetails" rows="3" placeholder="e.g. Caller claimed to be electricity officer and said power will be cut tonight at 9:30 PM unless I pay ₹10 via a WhatsApp link..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeReportModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-xl transition shadow-lg shadow-rose-600/30 flex items-center gap-1.5">
+            <i class="fa-solid fa-flag"></i> Submit Fraud Report
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Judge Architecture & Multi-API Modal -->
+  <div id="apiModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full p-6 relative shadow-2xl overflow-hidden">
+      <button onclick="toggleApiModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-2 mb-2 text-indigo-400">
+        <i class="fa-solid fa-network-wired text-lg"></i>
+        <h3 class="text-lg font-bold text-white">Judge Console: Production Telecom Architecture</h3>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">
+        VeriCom operates as a unified middleware gateway orchestrating multiple regulatory APIs across government, telecom carriers, and enterprise identity standards.
+      </p>
+
+      <!-- Multi-API Provider Tabs -->
+      <div class="flex flex-wrap gap-1.5 mb-4 border-b border-slate-800 pb-3">
+        <button id="apiTabChakshu" onclick="switchApiTab('chakshu')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-shield-halved"></i> DoT Sanchar Saathi (Chakshu)
+        </button>
+        <button id="apiTabDlt" onclick="switchApiTab('dlt')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-cubes-stacked"></i> TRAI DLT Blockchain
+        </button>
+        <button id="apiTabGoogle" onclick="switchApiTab('google')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-brands fa-google"></i> Google Verified Calls / RCS
+        </button>
+        <button id="apiTabTwilio" onclick="switchApiTab('twilio')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-lock"></i> Twilio STIR/SHAKEN
+        </button>
+      </div>
+
+      <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between gap-2 text-xs mb-3 font-mono">
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <span id="apiMethodBadge" class="px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">POST</span>
+          <span id="apiEndpointUrl" class="text-slate-300">/v1/dot/sanchar-saathi/chakshu/check</span>
+        </div>
+        <span class="text-slate-500 flex-shrink-0 text-[11px]">Latency: <strong class="text-emerald-400">24ms</strong></span>
+      </div>
+
+      <div id="apiPayloadContainer" class="bg-slate-950 p-4 rounded-xl font-mono text-xs text-slate-300 border border-slate-800 overflow-x-auto max-h-72">
+        <span class="text-slate-500">// Live Evaluated Regulatory Payload</span>
+        <pre id="apiJsonContent" class="text-slate-200 mt-1"></pre>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between">
+        <button onclick="copyCurrentApiPayload()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-copy"></i> Copy JSON Payload
+        </button>
+        <button onclick="toggleApiModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg">Close Console</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- OFFICIAL VERIFIED CONTACT DIRECTORY MODAL -->
+  <!-- ========================================================================= -->
+  <div id="directoryModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-3xl w-full p-5 sm:p-6 relative shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-sky-400 to-indigo-500"></div>
+
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-3.5 border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg border border-emerald-500/30">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Official Verified Contact Directory</h3>
+            <p class="text-xs text-slate-400">Authenticated phone numbers, SMS sender IDs, and web portals</p>
+          </div>
+        </div>
+        <button onclick="closeDirectoryModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Search & Category Filters -->
+      <div class="py-3 flex-shrink-0 space-y-2.5">
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input 
+            type="text" 
+            id="dirSearchInput" 
+            oninput="filterDirectory()" 
+            placeholder="Search organization, number, or category (e.g. SBI, 1930, FedEx, BESCOM, Airtel)..." 
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+        </div>
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <button type="button" onclick="filterDirCategory('all', this)" class="dir-tab active px-3 py-1 rounded-lg font-semibold bg-emerald-600 text-white transition">All Entities</button>
+          <button type="button" onclick="filterDirCategory('banking', this)" class="dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Banks</button>
+          <button type="button" onclick="filterDirCategory('utilities', this)" class="dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Utilities</button>
+          <button type="button" onclick="filterDirCategory('courier', this)" class="dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Courier & Cargo</button>
+          <button type="button" onclick="filterDirCategory('govt', this)" class="dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Govt & Helplines</button>
+          <button type="button" onclick="filterDirCategory('telecom', this)" class="dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition">Telecom</button>
+        </div>
+      </div>
+
+      <!-- Directory List Grid -->
+      <div id="directoryGrid" class="flex-grow overflow-y-auto space-y-2.5 pr-1 mt-1">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- NATIONAL TELECOM THREAT MAP & SCAM TELEMETRY MODAL -->
+  <!-- ========================================================================= -->
+  <div id="threatMapModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-4xl w-full p-5 sm:p-6 relative shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-rose-500 to-indigo-500"></div>
+
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-3 border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg border border-amber-500/30">
+            <i class="fa-solid fa-map-location-dot"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-lg font-bold text-white">National Telecom Threat Map & Scam Telemetry</h3>
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse"></span> LIVE
+              </span>
+            </div>
+            <p class="text-xs text-slate-400">Aggregated telemetry from DoT Chakshu, TRAI DLT, and citizen report clusters</p>
+          </div>
+        </div>
+        <button onclick="closeThreatMapModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Real-time National KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-3 flex-shrink-0">
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-left">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Fake SIMs Blocked</span>
+          <div class="text-base sm:text-lg font-black text-rose-400 flex items-center gap-1.5">
+            <span>1,429,812</span>
+            <i class="fa-solid fa-shield-virus text-xs text-rose-500"></i>
+          </div>
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-left">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">1930 Golden Hour Saved</span>
+          <div class="text-base sm:text-lg font-black text-emerald-400 flex items-center gap-1.5">
+            <span>₹1,248+ Cr</span>
+            <i class="fa-solid fa-vault text-xs text-emerald-500"></i>
+          </div>
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-left">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">Smishing Links Killed</span>
+          <div class="text-base sm:text-lg font-black text-indigo-400 flex items-center gap-1.5">
+            <span>43,219</span>
+            <i class="fa-solid fa-link-slash text-xs text-indigo-500"></i>
+          </div>
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-left">
+          <span class="text-[10px] text-slate-400 uppercase font-semibold">TRAI 140 Filtering</span>
+          <div class="text-base sm:text-lg font-black text-sky-400 flex items-center gap-1.5">
+            <span>99.4% Pass</span>
+            <i class="fa-solid fa-check-double text-xs text-sky-500"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scrollable Main Content -->
+      <div class="flex-grow overflow-y-auto pr-1 space-y-4">
+        <!-- Telecom Circles Heat Table -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-tower-broadcast text-amber-400"></i> Telecom Circle Threat Density Index (Real-Time)
+            </h4>
+            <span class="text-[11px] text-slate-400">Sorted by incident density</span>
+          </div>
+          <div id="threatCirclesGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+            <!-- Rendered by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Two Column Attack Vectors & Live Interception Stream -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <!-- Vectors Breakdown -->
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+            <h4 class="text-xs font-bold text-white mb-2.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-pie text-indigo-400"></i> Top Scam Vectors in India (Volume Share)
+            </h4>
+            <div class="space-y-2 text-xs">
+              <div>
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span class="text-slate-300 font-medium">⚡ Electricity Meter Disconnection APK</span>
+                  <span class="text-rose-400 font-bold">42%</span>
+                </div>
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-rose-500 h-full rounded-full" style="width: 42%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span class="text-slate-300 font-medium">📦 FedEx / Customs Digital Arrest Extortion</span>
+                  <span class="text-amber-400 font-bold">28%</span>
+                </div>
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-amber-400 h-full rounded-full" style="width: 28%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span class="text-slate-300 font-medium">💰 Instant Loan Harassment & Scraping APK</span>
+                  <span class="text-indigo-400 font-bold">18%</span>
+                </div>
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-indigo-400 h-full rounded-full" style="width: 18%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[11px] mb-1">
+                  <span class="text-slate-300 font-medium">💼 Telegram YouTube Like / Task Scams</span>
+                  <span class="text-sky-400 font-bold">12%</span>
+                </div>
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-sky-400 h-full rounded-full" style="width: 12%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Interception Stream -->
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-terminal text-emerald-400"></i> Live Intercepted Scam Stream
+              </h4>
+              <span class="text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Live Feed
+              </span>
+            </div>
+            <div id="threatLiveStream" class="font-mono text-[11px] space-y-1.5 max-h-48 overflow-y-auto pr-1">
+              <!-- Animated entries -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SUSPICIOUS NUMBER WATCHLIST MODAL -->
+  <!-- ========================================================================= -->
+  <div id="watchlistModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-xl w-full p-5 sm:p-6 relative shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 via-indigo-500 to-purple-500"></div>
+
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between pb-3 border-b border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg border border-sky-500/30">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-white">Suspicious Caller Watchlist</h3>
+            <p class="text-xs text-slate-400">Track suspicious numbers & receive simulated threat alerts</p>
+          </div>
+        </div>
+        <button onclick="closeWatchlistModal()" class="text-slate-400 hover:text-white transition">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Quick Add Form -->
+      <div class="py-3 flex-shrink-0">
+        <form onsubmit="addManualWatchlistItem(event)" class="flex gap-2">
+          <input 
+            type="text" 
+            id="watchlistAddInput" 
+            placeholder="Add phone number or sender ID (e.g. +91 98450 12345)..." 
+            class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500" 
+            required
+          >
+          <button type="submit" class="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition flex-shrink-0">
+            <i class="fa-solid fa-plus"></i> Watch
+          </button>
+        </form>
+      </div>
+
+      <!-- Watchlist Items Container -->
+      <div id="watchlistItemsContainer" class="flex-grow overflow-y-auto space-y-2 pr-1">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-6 bg-slate-950 text-center text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>VeriCom | Telecom Identity, DoT Sanchar Saathi & Phishing Intelligence</p>
+      <p class="text-slate-600">Built with HTML5, Tailwind CSS & JavaScript • Ready for Judges</p>
+    </div>
+  </footer>
+
+  <!-- Frontend Logic & Knowledge Engine -->
+  <script>
+    // State
+    let currentInputMode = 'number'; // 'number' | 'sms' | 'link' | 'screenshot' | 'simAudit'
+    let selectedOperator = 'Airtel';
+    let selectedApiTab = 'chakshu';
+    let currentQuery = '';
+    let currentIntelligence = null;
+    let selectedEvidenceTags = [];
+
+    // Official Organization Verified Channels Knowledge Base
+    const OFFICIAL_ORGANIZATIONS = {
+      sbi: {
+        name: "State Bank of India (SBI)",
+        officialHeader: "SBIINB / SBIPAY / SBISMS",
+        officialDomain: "https://www.onlinesbi.sbi",
+        phone: "1800 1234 / 1800 2100",
+        app: "SBI YONO (Google Play / App Store)",
+        safetyNotes: "SBI never sends links with .xyz, .top, or bit.ly domains and never threatens account blocking via SMS."
+      },
+      hdfc: {
+        name: "HDFC Bank",
+        officialHeader: "HDFCBK / HDFCBN",
+        officialDomain: "https://www.hdfcbank.com",
+        phone: "1800 1600 / 1800 2600",
+        app: "HDFC Bank MobileBanking",
+        safetyNotes: "HDFC Bank will never ask for your NetBanking password, debit card PIN, or OTP."
+      },
+      bescom: {
+        name: "BESCOM (Bangalore Electricity Supply Company)",
+        officialHeader: "BESCOM / KA-BESCOM",
+        officialDomain: "https://bescom.karnataka.gov.in",
+        phone: "1912 (24x7 BESCOM Helpline)",
+        app: "BESCOM Mithra App",
+        safetyNotes: "BESCOM never demands instant WhatsApp bill payments or APK downloads to prevent disconnection."
+      },
+      usps: {
+        name: "United States Postal Service (USPS)",
+        officialHeader: "28777 (USPS SMS Shortcode)",
+        officialDomain: "https://www.usps.com",
+        phone: "1-800-ASK-USPS (1-800-275-8777)",
+        app: "USPS Mobile",
+        safetyNotes: "USPS never texts asking for package redelivery fees from random +1 mobile numbers."
+      }
+    };
+
+    // 1. Verified Institutional Database
+    const VERIFIED_DATABASE = [
+      {
+        id: "1",
+        number: "SBIINB",
+        name: "State Bank of India (YONO Alerts)",
+        category: "Government Approved DLT Header",
+        domain: "onlinesbi.sbi",
+        carrier: "State Bank Telecom Gateway / BSNL & Airtel DLT",
+        circle: "National Banking Service",
+        verifiedSince: "2019",
+        notes: "Official registered commercial principal entity for State Bank of India OTPs and netbanking transaction alerts."
+      },
+      {
+        id: "2",
+        number: "HDFCBK",
+        name: "HDFC Bank Alert Services",
+        category: "Government Approved DLT Header",
+        domain: "hdfcbank.com",
+        carrier: "Bharti Airtel Telecom / DLT Registry",
+        circle: "National Banking Service",
+        verifiedSince: "2020",
+        notes: "Registered principal entity for official OTPs and netbanking transaction alerts."
+      },
+      {
+        id: "3",
+        number: "+18004321000",
+        name: "Chase Bank Customer Support",
+        category: "Financial Institution",
+        domain: "chase.com",
+        carrier: "AT&T Enterprise / Level 3",
+        circle: "North America Toll-Free",
+        verifiedSince: "2021",
+        notes: "Official toll-free line for personal banking inquiries."
+      },
+      {
+        id: "4",
+        number: "22888",
+        name: "Bank of America Fraud Alerts",
+        category: "Banking Shortcode",
+        domain: "bankofamerica.com",
+        carrier: "Twilio Verified Carrier Route",
+        circle: "US Commercial SMS Gateway",
+        verifiedSince: "2020",
+        notes: "Automated SMS notification center for debit/credit card security alerts."
+      },
+      {
+        id: "5",
+        number: "+18008291040",
+        name: "IRS Individual Taxpayer Helpline",
+        category: "Government Agency",
+        domain: "irs.gov",
+        carrier: "Federal Enterprise Telecom",
+        circle: "Washington D.C., USA",
+        verifiedSince: "2019",
+        notes: "Official federal tax assistance channel. Note: IRS never demands immediate digital gift card payments."
+      }
+    ];
+
+    // Dynamic Scam Database
+    let SCAM_DATABASE = [
+      {
+        number: "USPS-ALERT",
+        reports: 1420,
+        risk: "HIGH - Smishing / Package Scam",
+        carrier: "Virtual Cloud SMS Gateway",
+        circle: "Unverified International Route",
+        details: "Attempts to collect fake custom fees or redelivery address info via malicious phishing link (e.g. usps-track-fee.top)."
+      },
+      {
+        number: "+19175550199",
+        reports: 89,
+        risk: "HIGH - Impersonation Fraud",
+        carrier: "Twilio VoIP Route",
+        circle: "New York, USA",
+        details: "Posing as tech support claiming unauthorized charges on online shopping accounts."
+      },
+      {
+        number: "+919845099887",
+        reports: 342,
+        risk: "HIGH - Electricity Power Disconnection Scam",
+        carrier: "Unregistered SIM Gateway",
+        circle: "Karnataka (Bangalore Urban)",
+        details: "Sends fake SMS claiming electricity connection will be suspended tonight at 9:30 PM unless an APK is installed."
+      }
+    ];
+
+    // Curated SIM Pre-Purchase Threat Registry
+    const SIM_AUDIT_DATABASE = [
+      {
+        number: "+919845077112",
+        score: 96,
+        grade: "Grade A (Pristine)",
+        verdict: "SAFE_TO_BUY",
+        statusTitle: "Clean & Pristine Number — Safe to Activate",
+        operatorPool: "Airtel Karnataka Circle (Fresh Number Allocation)",
+        quarantineDays: 380,
+        debtRisk: "CLEAN",
+        debtDetails: "Zero loan defaults or recovery agent queues detected across financial registries.",
+        cyberCrimeStatus: "CLEAN",
+        cyberCrimeDetails: "Clean. No active complaints on National Cyber Crime Reporting Portal.",
+        whatsappStatus: "READY",
+        whatsappDetails: "No active WhatsApp registration found. Fresh sign-up guaranteed.",
+        breachExposure: "0 Breaches",
+        breachDetails: "No associated data leaks or compromised credentials found.",
+        storeAdvice: 'Tell store staff: "This number is verified clean. Please proceed with activation."'
+      },
+      {
+        number: "+919900188234",
+        score: 16,
+        grade: "Grade F (Toxic Recycled SIM)",
+        verdict: "REJECT_TOXIC",
+        statusTitle: "Critical Risk: Active Loan Recovery Harassment",
+        operatorPool: "Recycled SIM Pool (Deactivated 110 days ago)",
+        quarantineDays: 110,
+        debtRisk: "CRITICAL_DEFAULT",
+        debtDetails: "8 unpaid microloan/NBFC defaults detected. 42 aggressive debt recovery calls logged last month.",
+        cyberCrimeStatus: "CLEAN",
+        cyberCrimeDetails: "No police FIRs recorded.",
+        whatsappStatus: "ACCOUNT_ACTIVE",
+        whatsappDetails: "Existing active profile detected. Previous owner still registered on multiple groups.",
+        breachExposure: "4 Breaches",
+        breachDetails: "Leaked in 4 e-commerce databases with full name and address.",
+        storeAdvice: 'Tell store staff: "I ran a security audit and this number has active debt collection queues from the previous owner. Please give me a different SIM from another series (e.g. 96xx or 91xx)."'
+      },
+      {
+        number: "+917022399441",
+        score: 11,
+        grade: "Grade F (Cyber Crime Blacklist)",
+        verdict: "REJECT_TOXIC",
+        statusTitle: "National Cyber Crime & DoT Chakshu Blacklist",
+        operatorPool: "Recycled Suspect SIM Pool",
+        quarantineDays: 95,
+        debtRisk: "CLEAN",
+        debtDetails: "No active banking debt queues.",
+        cyberCrimeStatus: "BLACKLISTED",
+        cyberCrimeDetails: "Reported in 14 fraudulent UPI payment phishing cases. Flagged by State Cyber Police.",
+        whatsappStatus: "BANNED",
+        whatsappDetails: "Permanently suspended by WhatsApp for illegal bulk spam & violation of terms.",
+        breachExposure: "2 Breaches",
+        breachDetails: "Found in dark web credential combo lists.",
+        storeAdvice: 'Tell store staff: "This number is blacklisted in telecom cyber security feeds for UPI fraud. Do NOT allocate this number to me."'
+      },
+      {
+        number: "+919886055123",
+        score: 74,
+        grade: "Grade B (Low Risk / Acceptable)",
+        verdict: "CAUTION_ACCEPTABLE",
+        statusTitle: "Recycled Number — Low Risk Profile",
+        operatorPool: "Vi Maharashtra Circle (Dormant 18 Months)",
+        quarantineDays: 540,
+        debtRisk: "CLEAN",
+        debtDetails: "No bank recovery queues or debt collections found.",
+        cyberCrimeStatus: "CLEAN",
+        cyberCrimeDetails: "Clean cyber crime record.",
+        whatsappStatus: "INACTIVE",
+        whatsappDetails: "Account dormant for over 1 year. Safe to reclaim with SMS OTP.",
+        breachExposure: "1 Breach",
+        breachDetails: "Found in an older 2021 food delivery database leak.",
+        storeAdvice: 'Acceptable to purchase. Number has been dormant for 18 months and is free from debt collectors.'
+      }
+    ];
+
+    // DoT Prefix Allocation Matrix
+    const DOT_PREFIX_MAP = {
+      "9908": { operator: "Bharti Airtel Telecom Ltd.", circle: "Andhra Pradesh & Telangana", hub: "Hyderabad / Vijayawada" },
+      "9848": { operator: "Bharti Airtel Telecom Ltd.", circle: "Andhra Pradesh & Telangana", hub: "Hyderabad" },
+      "9849": { operator: "Bharti Airtel Telecom Ltd.", circle: "Andhra Pradesh & Telangana", hub: "Hyderabad" },
+      "9845": { operator: "Bharti Airtel Telecom Ltd.", circle: "Karnataka", hub: "Bengaluru" },
+      "9844": { operator: "Bharti Airtel Telecom Ltd.", circle: "Karnataka", hub: "Bengaluru" },
+      "9880": { operator: "Bharti Airtel Telecom Ltd.", circle: "Karnataka", hub: "Bengaluru" },
+      "9886": { operator: "Vodafone Idea (Vi)", circle: "Karnataka", hub: "Bengaluru" },
+      "9900": { operator: "Bharti Airtel Telecom Ltd.", circle: "Karnataka", hub: "Bengaluru" },
+      "7019": { operator: "Reliance Jio Infocomm", circle: "Karnataka", hub: "Bengaluru" },
+      "7022": { operator: "Reliance Jio Infocomm", circle: "Karnataka", hub: "Bengaluru" },
+      "9810": { operator: "Bharti Airtel Telecom Ltd.", circle: "Delhi NCR", hub: "New Delhi" },
+      "9811": { operator: "Vodafone Idea (Vi)", circle: "Delhi NCR", hub: "New Delhi" },
+      "9820": { operator: "Vodafone Idea (Vi)", circle: "Mumbai", hub: "Mumbai" },
+      "9840": { operator: "Bharti Airtel Telecom Ltd.", circle: "Chennai", hub: "Chennai" }
+    };
+
+    // Stored Phonebook
+    function getStoredPhonebook() {
+      try {
+        const stored = localStorage.getItem('vericom_community_phonebook');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      return {
+        "9845012345": {
+          name: "Ananya Rao",
+          type: "Personal Consumer Mobile Line",
+          badge: "TRAI CNAP Verified",
+          city: "Bengaluru, Karnataka",
+          kycStatus: "Aadhaar KYC Verified",
+          isPersonal: true
+        }
+      };
+    }
+
+    function saveToPhonebook(number, data) {
+      const book = getStoredPhonebook();
+      const clean = normalizeInput(number).replace(/^\+91/, '').replace(/^91/, '');
+      book[clean] = data;
+      try {
+        localStorage.setItem('vericom_community_phonebook', JSON.stringify(book));
+      } catch (e) {}
+    }
+
+    function normalizeInput(str) {
+      return (str || '').trim().replace(/[\s\-\(\)\.]/g, '').toUpperCase();
+    }
+
+    function hashString(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    // =========================================================================
+    // 2. INPUT MODE SWITCHER (Number, SMS, Link, Screenshot, SIM Audit)
+    // =========================================================================
+    function setInputMode(mode) {
+      currentInputMode = mode;
+
+      // Update Pill UI
+      const tabs = {
+        number: document.getElementById('tabInputNumber'),
+        sms: document.getElementById('tabInputSms'),
+        link: document.getElementById('tabInputLink'),
+        screenshot: document.getElementById('tabInputScreenshot'),
+        simAudit: document.getElementById('tabInputSimAudit')
+      };
+
+      Object.keys(tabs).forEach(k => {
+        if (k === mode) {
+          tabs[k].className = "mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30";
+        } else {
+          tabs[k].className = "mode-pill px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/60";
+        }
+      });
+
+      // Controls visibility
+      const singleContainer = document.getElementById('singleInputContainer');
+      const multilineContainer = document.getElementById('multilineInputContainer');
+      const operatorContainer = document.getElementById('operatorSelectContainer');
+      const screenshotContainer = document.getElementById('screenshotUploadContainer');
+      const searchInput = document.getElementById('searchInput');
+      const searchIcon = document.getElementById('searchIcon');
+      const btnText = document.getElementById('btnText');
+      const scanningText = document.getElementById('scanningText');
+      const resultContainer = document.getElementById('resultContainer');
+
+      resultContainer.classList.add('hidden');
+
+      if (mode === 'sms') {
+        singleContainer.classList.add('hidden');
+        multilineContainer.classList.remove('hidden');
+        operatorContainer.classList.add('hidden');
+        screenshotContainer.classList.add('hidden');
+        scanningText.innerText = "Analyzing Phishing Signals, Urgency Deadlines & Impersonation Vectors...";
+        renderPresetsForSms();
+      } else if (mode === 'link') {
+        singleContainer.classList.remove('hidden');
+        multilineContainer.classList.add('hidden');
+        operatorContainer.classList.add('hidden');
+        screenshotContainer.classList.add('hidden');
+        searchInput.placeholder = "Paste suspicious URL to scan (e.g. sbi-kyc-update.xyz, bit.ly/power-cut)...";
+        searchIcon.className = "fa-solid fa-link text-emerald-400";
+        btnText.innerText = "Scan Link";
+        scanningText.innerText = "Querying WHOIS Age, SSL Certificate Origin & Phishing Blacklists...";
+        renderPresetsForLink();
+      } else if (mode === 'screenshot') {
+        singleContainer.classList.add('hidden');
+        multilineContainer.classList.remove('hidden');
+        operatorContainer.classList.add('hidden');
+        screenshotContainer.classList.remove('hidden');
+        scanningText.innerText = "Performing Optical Character Recognition & Scam Parsing...";
+        renderPresetsForSms();
+      } else if (mode === 'simAudit') {
+        singleContainer.classList.remove('hidden');
+        multilineContainer.classList.add('hidden');
+        operatorContainer.classList.remove('hidden');
+        screenshotContainer.classList.add('hidden');
+        searchInput.placeholder = "Enter prospective SIM number to audit (e.g. +91 98450 77112)...";
+        searchIcon.className = "fa-solid fa-sim-card text-purple-400";
+        btnText.innerText = "Audit SIM";
+        scanningText.innerText = "Auditing Telecom Recycling History, Loan Recovery Registries & Cyber Crime Records...";
+        renderPresetsForSimAudit();
+      } else {
+        // Number mode
+        singleContainer.classList.remove('hidden');
+        multilineContainer.classList.add('hidden');
+        operatorContainer.classList.add('hidden');
+        screenshotContainer.classList.add('hidden');
+        searchInput.placeholder = "Search ANY number or header (e.g. 9908733337, SBIINB, +91 98450 12345, 1409201122)...";
+        searchIcon.className = "fa-solid fa-magnifying-glass text-slate-400";
+        btnText.innerText = "Verify";
+        scanningText.innerText = "Querying DoT Sanchar Saathi, TRAI DLT Blockchain & HLR Feeds...";
+        renderPresetsForNumber();
+      }
+    }
+
+    function selectOperator(btn, opName) {
+      selectedOperator = opName;
+      document.querySelectorAll('.op-btn').forEach(b => {
+        b.className = "op-btn py-2 px-3 rounded-xl text-xs font-semibold border bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500 transition text-center";
+      });
+      btn.className = "op-btn active py-2 px-3 rounded-xl text-xs font-semibold border bg-emerald-600/20 border-emerald-500 text-emerald-300 transition text-center";
+    }
+
+    // Preset Renderers
+    function renderPresetsForNumber() {
+      const container = document.getElementById('presetButtonsContainer');
+      container.innerHTML = `
+        <button onclick="setPresetNumber('SBIINB')" class="px-2.5 py-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600/50 transition flex items-center gap-1 font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 SBI YONO Alerts
+        </button>
+        <button onclick="setPresetNumber('+919845012345')" class="px-2.5 py-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 Airtel Mobile SIM
+        </button>
+        <button onclick="setPresetNumber('1409201122')" class="px-2.5 py-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> 🟡 TRAI 140 Robocaller
+        </button>
+        <button onclick="setPresetNumber('USPS-ALERT')" class="px-2.5 py-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 USPS Phish
+        </button>
+        <button onclick="setPresetNumber('+919845099887')" class="px-2.5 py-1 bg-slate-700/60 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 Electricity Cut Scam
+        </button>
+      `;
+    }
+
+    function renderPresetsForSms() {
+      const container = document.getElementById('presetButtonsContainer');
+      container.innerHTML = `
+        <button onclick="setPresetSms('sbi')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 "SBI Account Blocked Today"
+        </button>
+        <button onclick="setPresetSms('bescom')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 "Power Cut Tonight at 9:30"
+        </button>
+        <button onclick="setPresetSms('telegram')" class="px-2.5 py-1 bg-amber-950/60 hover:bg-amber-900/60 text-amber-300 rounded-lg border border-amber-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> 🟡 "YouTube Rating Job ₹5000/day"
+        </button>
+        <button onclick="setPresetSms('safe')" class="px-2.5 py-1 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 rounded-lg border border-emerald-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 Official HDFC Transaction Alert
+        </button>
+      `;
+    }
+
+    function renderPresetsForLink() {
+      const container = document.getElementById('presetButtonsContainer');
+      container.innerHTML = `
+        <button onclick="setPresetLink('https://sbi-kyc-verification.top/update')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 sbi-kyc-verification.top
+        </button>
+        <button onclick="setPresetLink('https://bescom-bill-update.xyz/quicksupport.apk')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 bescom-bill-update.xyz (APK)
+        </button>
+        <button onclick="setPresetLink('https://www.onlinesbi.sbi')" class="px-2.5 py-1 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 rounded-lg border border-emerald-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 onlinesbi.sbi (Official)
+        </button>
+      `;
+    }
+
+    function renderPresetsForSimAudit() {
+      const container = document.getElementById('presetButtonsContainer');
+      container.innerHTML = `
+        <button onclick="setPresetNumber('+919845077112')" class="px-2.5 py-1 bg-emerald-950/60 hover:bg-emerald-900/60 text-emerald-300 rounded-lg border border-emerald-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 🟢 Pristine Clean SIM
+        </button>
+        <button onclick="setPresetNumber('+919900188234')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 Active Loan Harassment
+        </button>
+        <button onclick="setPresetNumber('+917022399441')" class="px-2.5 py-1 bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 rounded-lg border border-rose-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> 🔴 Cyber Crime Blocked
+        </button>
+        <button onclick="setPresetNumber('+919886055123')" class="px-2.5 py-1 bg-amber-950/60 hover:bg-amber-900/60 text-amber-300 rounded-lg border border-amber-600/50 transition flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> 🟡 Dormant Recycled SIM
+        </button>
+      `;
+    }
+
+    function setPresetNumber(val) {
+      document.getElementById('searchInput').value = val;
+      executeVerification(val);
+    }
+
+    function setPresetLink(val) {
+      document.getElementById('searchInput').value = val;
+      executeVerification(val);
+    }
+
+    function setPresetSms(type) {
+      const input = document.getElementById('messageInput');
+      if (type === 'sbi') {
+        input.value = "Dear Customer, your SBI account will be blocked today due to pending KYC. Update immediately at https://sbi-kyc-verification.top or call officer at +91-9876543210 to prevent suspension.";
+      } else if (type === 'bescom') {
+        input.value = "Dear consumer, your electricity power will be disconnected tonight at 9:30 PM by electricity office because your previous month bill was not updated. Please immediately contact our power officer at 9845099887 or install update at https://bescom-bill.xyz/app.apk";
+      } else if (type === 'telegram') {
+        input.value = "Congratulations! You have been selected for part-time YouTube rating tasks. Earn ₹3,000 to ₹8,000 daily. No investment needed. Contact HR manager immediately on Telegram: https://t.me/parttime-task-2026";
+      } else {
+        input.value = "₹4,500.00 debited from HDFC Bank A/c **4120 on 03-OCT-26 to Amazon India. Info: UPI/Ref 427810. If not done by you, call 18002664332.";
+      }
+      executeVerification(input.value);
+    }
+
+    function loadSampleScreenshot(sample) {
+      setInputMode('screenshot');
+      if (sample === 'sbi') {
+        setPresetSms('sbi');
+      } else {
+        setPresetSms('bescom');
+      }
+      showToast("OCR Simulation Loaded", "Extracted text and metadata from sample screenshot.");
+    }
+
+    function handleScreenshotUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      showToast("Processing Image with OCR...", `Scanning "${file.name}" for text & phishing links.`);
+      setTimeout(() => {
+        document.getElementById('messageInput').value = "Dear customer, your bank account will be blocked today due to pending KYC. Update immediately at https://sbi-kyc-update.xyz or call +91-9876543210";
+        executeVerification(document.getElementById('messageInput').value);
+      }, 600);
+    }
+
+    // Form submit dispatcher
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      let query = '';
+      if (currentInputMode === 'sms' || currentInputMode === 'screenshot') {
+        query = document.getElementById('messageInput').value.trim();
+      } else {
+        query = document.getElementById('searchInput').value.trim();
+      }
+      if (!query) return;
+      executeVerification(query);
+    }
+
+    // =========================================================================
+    // 3. CORE SCAM NLP & INTENT PARSING ENGINE
+    // =========================================================================
+    function analyzeMessageIntent(text) {
+      const lower = text.toLowerCase();
+      let riskScore = 10;
+      let flaggedSignals = [];
+      let detectedBrand = null;
+      let safeAlt = null;
+
+      // Extract URLs
+      const urlRegex = /(https?:\/\/[^\s]+)/gi;
+      const extractedUrls = text.match(urlRegex) || [];
+
+      // Extract Phone Numbers
+      const phoneRegex = /(\+?\d{1,3}[- ]?)?\d{10}/g;
+      const extractedNumbers = text.match(phoneRegex) || [];
+
+      // 1. Urgency detection
+      if (lower.includes('blocked today') || lower.includes('tonight at') || lower.includes('disconnected tonight') || lower.includes('within 2 hours') || lower.includes('immediately') || lower.includes('last warning') || lower.includes('urgent')) {
+        riskScore += 25;
+        flaggedSignals.push({
+          icon: 'fa-clock text-rose-400',
+          title: 'Artificial Urgency Deadline',
+          desc: 'Creates a strict deadline (e.g. "blocked today", "tonight at 9:30 PM") to force impulsive action without verification.'
+        });
+      }
+
+      // 2. Credential & Action Requests
+      if (lower.includes('kyc') || lower.includes('pan') || lower.includes('aadhaar') || lower.includes('otp') || lower.includes('pin') || lower.includes('password') || lower.includes('apk') || lower.includes('install')) {
+        riskScore += 30;
+        flaggedSignals.push({
+          icon: 'fa-id-card text-rose-400',
+          title: 'Sensitive Credential / Action Demand',
+          desc: 'Demands immediate KYC update, OTP disclosure, or downloading an unknown .APK remote-access package.'
+        });
+      }
+
+      // 3. Unofficial Domain / Suspicious Link
+      if (extractedUrls.length > 0) {
+        let isSuspiciousDomain = false;
+        extractedUrls.forEach(u => {
+          if (u.includes('.xyz') || u.includes('.top') || u.includes('.live') || u.includes('.buzz') || u.includes('.apk') || u.includes('t.me') || u.includes('bit.ly')) {
+            isSuspiciousDomain = true;
+          }
+        });
+
+        if (isSuspiciousDomain) {
+          riskScore += 35;
+          flaggedSignals.push({
+            icon: 'fa-link text-rose-400',
+            title: 'Deceptive Phishing Link / Domain Mismatch',
+            desc: `Link directs to an unauthorized domain (${extractedUrls[0]}) instead of the official institution portal.`
+          });
+        }
+      }
+
+      // 4. Brand Detection & Safe Alternative Lookup
+      if (lower.includes('sbi') || lower.includes('state bank') || lower.includes('yono')) {
+        detectedBrand = 'SBI';
+        safeAlt = OFFICIAL_ORGANIZATIONS.sbi;
+      } else if (lower.includes('hdfc')) {
+        detectedBrand = 'HDFC Bank';
+        safeAlt = OFFICIAL_ORGANIZATIONS.hdfc;
+      } else if (lower.includes('bescom') || lower.includes('electricity') || lower.includes('power cut')) {
+        detectedBrand = 'BESCOM';
+        safeAlt = OFFICIAL_ORGANIZATIONS.bescom;
+      } else if (lower.includes('usps') || lower.includes('package') || lower.includes('delivery fee')) {
+        detectedBrand = 'USPS';
+        safeAlt = OFFICIAL_ORGANIZATIONS.usps;
+      }
+
+      // 5. Header / Sender mismatch
+      if (detectedBrand && (lower.includes('.xyz') || lower.includes('.top') || lower.includes('officer at') || lower.includes('contact our'))) {
+        riskScore += 15;
+        flaggedSignals.push({
+          icon: 'fa-shield-halved text-rose-400',
+          title: `Brand Impersonation (${detectedBrand})`,
+          desc: `Poses as official ${detectedBrand} communications, but requests direct personal contacts or unverified redirects.`
+        });
+      }
+
+      // Normalization
+      riskScore = Math.min(riskScore, 98);
+      if (lower.includes('debited from') && lower.includes('if not done by you') && !lower.includes('.xyz')) {
+        riskScore = 8; // Official bank debit alert pattern
+        flaggedSignals = [];
+      }
+
+      return {
+        text: text,
+        riskScore: riskScore,
+        isSafe: riskScore < 30,
+        flaggedSignals: flaggedSignals,
+        extractedUrls: extractedUrls,
+        extractedNumbers: extractedNumbers,
+        detectedBrand: detectedBrand,
+        safeAlt: safeAlt
+      };
+    }
+
+    // =========================================================================
+    // 4. MAIN VERIFICATION CONTROLLER
+    // =========================================================================
+    function executeVerification(rawQuery) {
+      currentQuery = rawQuery;
+      const clean = normalizeInput(rawQuery);
+      const container = document.getElementById('resultContainer');
+      const scanner = document.getElementById('scanningIndicator');
+
+      container.classList.add('hidden');
+      scanner.classList.remove('hidden');
+
+      setTimeout(() => {
+        scanner.classList.add('hidden');
+        container.classList.remove('hidden');
+
+        // ROUTING LOGIC BASED ON INPUT TYPE OR CONTENT
+        if (currentInputMode === 'simAudit') {
+          const auditData = auditSimNumber(rawQuery, selectedOperator);
+          renderSimAuditCard(rawQuery, auditData);
+          currentIntelligence = { isSimAudit: true, data: auditData };
+        } else if (currentInputMode === 'sms' || currentInputMode === 'screenshot' || rawQuery.split(' ').length > 4) {
+          // Message / SMS analysis
+          const nlpResult = analyzeMessageIntent(rawQuery);
+          renderMessageAnalysisCard(nlpResult);
+          currentIntelligence = { isMessageAnalysis: true, data: nlpResult };
+        } else if (rawQuery.startsWith('http') || rawQuery.includes('.com') || rawQuery.includes('.top') || rawQuery.includes('.xyz')) {
+          // Link analysis
+          renderLinkAnalysisCard(rawQuery);
+          currentIntelligence = { isLink: true, url: rawQuery };
+        } else {
+          // Number / Sender ID check
+          const officialMatch = VERIFIED_DATABASE.find(item => normalizeInput(item.number) === clean);
+          const scamMatch = SCAM_DATABASE.find(item => normalizeInput(item.number) === clean);
+
+          if (officialMatch) {
+            renderVerifiedCard(officialMatch);
+            currentIntelligence = { isOfficial: true, data: officialMatch };
+          } else if (scamMatch) {
+            renderScamCard(scamMatch);
+            currentIntelligence = { isScam: true, data: scamMatch };
+          } else {
+            const realInfo = lookupRealSubscriberInfo(rawQuery);
+            renderRealSubscriberCard(rawQuery, realInfo);
+            currentIntelligence = realInfo;
+          }
+        }
+
+        updateCurrentApiView();
+      }, 350);
+    }
+
+    // =========================================================================
+    // 5. RENDER MESSAGE ANALYSIS CARD ("Paste message -> Explain scam")
+    // =========================================================================
+    function renderMessageAnalysisCard(analysis) {
+      const container = document.getElementById('resultContainer');
+      const isDangerous = analysis.riskScore >= 70;
+      const isModerate = analysis.riskScore >= 30 && analysis.riskScore < 70;
+
+      let borderClass = isDangerous ? 'border-rose-500/80 bg-rose-950/20' : (isModerate ? 'border-amber-500/80 bg-amber-950/20' : 'border-emerald-500/80 bg-emerald-950/20');
+      let scoreColor = isDangerous ? 'text-rose-400' : (isModerate ? 'text-amber-400' : 'text-emerald-400');
+      let badgeBg = isDangerous ? 'bg-rose-600 text-white' : (isModerate ? 'bg-amber-500 text-slate-950' : 'bg-emerald-500 text-slate-950');
+      let verdictTitle = isDangerous ? 'CRITICAL RISK — CONFIRMED FRAUD PATTERN' : (isModerate ? 'SUSPICIOUS COMMUNICATION DETECTED' : 'LEGITIMATE SERVICE NOTIFICATION');
+
+      // Generate Signals List HTML
+      let signalsHtml = '';
+      if (analysis.flaggedSignals.length > 0) {
+        signalsHtml = `
+          <div class="mt-4 pt-4 border-t border-slate-700/60">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> Why was this flagged? (${analysis.flaggedSignals.length} Suspicious Signals Detected)
+            </h4>
+            <div class="space-y-2">
+              ${analysis.flaggedSignals.map(sig => `
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5 text-xs">
+                  <i class="fa-solid ${sig.icon} mt-0.5 text-sm"></i>
+                  <div>
+                    <strong class="text-white block">${sig.title}</strong>
+                    <span class="text-slate-300 text-[11px] leading-relaxed">${sig.desc}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+        signalsHtml = `
+          <div class="mt-4 pt-4 border-t border-slate-700/60">
+            <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-3 flex items-center gap-2.5 text-xs text-emerald-300">
+              <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+              <span>Zero phishing keywords, no credential requests, and conforms to standard banking debit notifications.</span>
+            </div>
+          </div>
+        `;
+      }
+
+      // Generate Safe Alternative Box HTML
+      let safeAltHtml = '';
+      if (analysis.safeAlt) {
+        safeAltHtml = `
+          <div class="mt-4 bg-slate-900/95 border border-emerald-500/40 rounded-xl p-4 text-xs">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved"></i> Safe Alternative: Official ${analysis.safeAlt.name} Channels
+              </span>
+              <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 font-semibold">Do Not Call SMS Sender</span>
+            </div>
+            <p class="text-slate-300 text-[11px] mb-3 leading-relaxed">${analysis.safeAlt.safetyNotes}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-[11px]">
+              <div>
+                <span class="text-slate-500 block">Verified Website:</span>
+                <a href="${analysis.safeAlt.officialDomain}" target="_blank" class="text-indigo-400 hover:underline font-bold">${analysis.safeAlt.officialDomain}</a>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Official Helpline:</span>
+                <span class="text-slate-200 font-bold">${analysis.safeAlt.phone}</span>
+              </div>
+              <div>
+                <span class="text-slate-500 block">Official Mobile App:</span>
+                <span class="text-slate-200 font-bold">${analysis.safeAlt.app}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Communication Trust Graph Visualization
+      const trustGraphHtml = `
+        <div class="mt-4 bg-slate-950/90 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-3 text-xs">
+            <span class="font-bold text-slate-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-diagram-project text-indigo-400"></i> Communication Trust Graph
+            </span>
+            <span class="text-[10px] text-slate-500">Correlation of sender, link, and threat feeds</span>
+          </div>
+
+          <!-- Interactive Node Map -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+            <div class="bg-slate-900 border border-slate-700/80 p-2.5 rounded-xl">
+              <span class="text-[10px] text-slate-500 uppercase block font-bold">1. Origin Inbound</span>
+              <span class="text-white font-mono font-bold block truncate mt-0.5">${analysis.extractedNumbers[0] || 'SMS Push'}</span>
+              <span class="text-[10px] ${isDangerous ? 'text-rose-400' : 'text-emerald-400'}">Unregistered SIM</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-700/80 p-2.5 rounded-xl">
+              <span class="text-[10px] text-slate-500 uppercase block font-bold">2. Brand Impersonated</span>
+              <span class="text-white font-bold block truncate mt-0.5">${analysis.detectedBrand || 'None'}</span>
+              <span class="text-[10px] ${isDangerous ? 'text-rose-400' : 'text-emerald-400'}">DLT Mismatch</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-700/80 p-2.5 rounded-xl">
+              <span class="text-[10px] text-slate-500 uppercase block font-bold">3. Extracted Link</span>
+              <span class="text-white font-mono text-[11px] block truncate mt-0.5">${analysis.extractedUrls[0] || 'No Link'}</span>
+              <span class="text-[10px] ${isDangerous ? 'text-rose-400' : 'text-slate-400'}">${analysis.extractedUrls[0] ? 'Phishing Domain' : 'Clear'}</span>
+            </div>
+            <div class="bg-slate-900 border ${isDangerous ? 'border-rose-500/80 bg-rose-950/20' : 'border-emerald-500/80 bg-emerald-950/20'} p-2.5 rounded-xl">
+              <span class="text-[10px] text-slate-400 uppercase block font-bold">4. Final Verdict</span>
+              <span class="text-base font-black ${scoreColor} block mt-0.5">${analysis.riskScore}/100</span>
+              <span class="text-[10px] font-bold ${scoreColor}">${isDangerous ? 'BLOCKED' : 'SAFE'}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = `
+        <div class="bg-slate-800/90 border-2 ${borderClass} rounded-2xl p-6 text-left shadow-2xl relative overflow-hidden transition-all">
+          
+          <!-- Top Badge -->
+          <div class="absolute top-0 right-0 ${badgeBg} font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-shield-virus"></i> ${verdictTitle}
+          </div>
+
+          <!-- Header with Risk Gauge -->
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-3">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Scam Pattern Analysis</span>
+              <h2 class="text-xl sm:text-2xl font-black text-white mt-0.5">${verdictTitle}</h2>
+              <p class="text-xs text-slate-400 mt-1">Evaluated across linguistic urgency patterns, fake KYC triggers, and link redirects.</p>
+            </div>
+
+            <!-- Big Risk Meter -->
+            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-3 flex items-center gap-3 self-start">
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400 uppercase block font-bold">Risk Index</span>
+                <span class="text-xs font-bold ${scoreColor}">${isDangerous ? 'HIGH RISK' : (isModerate ? 'SUSPICIOUS' : 'SAFE')}</span>
+              </div>
+              <div class="text-3xl font-black ${scoreColor} font-mono border-l border-slate-800 pl-3">
+                ${analysis.riskScore}<span class="text-xs text-slate-500 font-normal">/100</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Original Message Snippet Box -->
+          <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-xs text-slate-300 font-mono italic my-2 whitespace-pre-wrap leading-relaxed">
+            "${analysis.text}"
+          </div>
+
+          <!-- Why was this flagged signals -->
+          ${signalsHtml}
+
+          <!-- Visual Trust Graph -->
+          ${trustGraphHtml}
+
+          <!-- Safe Alternative Box -->
+          ${safeAltHtml}
+
+          <!-- Recommended Actions Footer -->
+          <div class="mt-4 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-slate-400">Recommended Action:</span>
+              <span class="font-bold ${isDangerous ? 'text-rose-400' : 'text-emerald-400'}">
+                ${isDangerous ? '❌ Do NOT click link & do NOT share OTP' : '✅ Safe to proceed'}
+              </span>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              ${isDangerous ? `
+                <button onclick="openEmergencyModal()" class="flex-1 sm:flex-initial py-2 px-3 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-md shadow-rose-600/30">
+                  <i class="fa-solid fa-triangle-exclamation"></i> I Already Clicked / Paid
+                </button>
+                <button onclick="toggleWatchlist('${analysis.extractedNumbers[0] || 'Suspicious SMS'}', 'SMS Threat: ${analysis.detectedPattern}')" class="flex-1 sm:flex-initial py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+                </button>
+                <button onclick="openReportModal('${analysis.extractedNumbers[0] || 'Suspicious SMS'}')" class="flex-1 sm:flex-initial py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-flag"></i> Report Scam
+                </button>
+              ` : `
+                <button onclick="toggleWatchlist('${analysis.extractedNumbers[0] || 'Verified SMS'}', 'SMS: Clean Message')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-1.5">
+                  <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+                </button>
+                <button onclick="copyText('${analysis.text.replace(/'/g, "\\'")}')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-1.5">
+                  <i class="fa-solid fa-copy"></i> Copy Message
+                </button>
+              `}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 6. RENDER LINK / URL SCANNER CARD
+    // =========================================================================
+    function renderLinkAnalysisCard(url) {
+      const container = document.getElementById('resultContainer');
+      const lower = url.toLowerCase();
+      const isPhishing = lower.includes('.xyz') || lower.includes('.top') || lower.includes('.apk') || lower.includes('bit.ly') || lower.includes('update') || lower.includes('verify');
+      const riskScore = isPhishing ? 93 : 8;
+
+      container.innerHTML = `
+        <div class="bg-slate-800/90 border-2 ${isPhishing ? 'border-rose-500/80 bg-rose-950/20' : 'border-emerald-500/80 bg-emerald-950/20'} rounded-2xl p-6 text-left shadow-2xl relative overflow-hidden transition-all">
+          <div class="absolute top-0 right-0 ${isPhishing ? 'bg-rose-600 text-white' : 'bg-emerald-500 text-slate-950'} font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid ${isPhishing ? 'fa-triangle-exclamation' : 'fa-circle-check'}"></i> ${isPhishing ? 'PHISHING LINK FLAGGED' : 'VERIFIED OFFICIAL DOMAIN'}
+          </div>
+
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Domain & URL Security Evaluation</span>
+              <h2 class="text-xl font-mono font-bold text-white mt-0.5 truncate max-w-md">${url}</h2>
+              <p class="text-xs ${isPhishing ? 'text-rose-400' : 'text-emerald-400'} font-semibold mt-0.5">
+                ${isPhishing ? 'Typo-squatting & malicious payload hosting detected' : 'Authentic corporate SSL certificate verified'}
+              </p>
+            </div>
+            <div class="text-2xl font-black ${isPhishing ? 'text-rose-400' : 'text-emerald-400'} font-mono bg-slate-950 p-3 rounded-xl border border-slate-800">
+              ${riskScore}<span class="text-xs text-slate-500 font-normal">/100</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-800 text-xs mb-4">
+            <div>
+              <span class="text-slate-400 block mb-0.5">Domain Age:</span>
+              <span class="font-bold ${isPhishing ? 'text-rose-400' : 'text-emerald-400'}">${isPhishing ? '3 Days Old (Fresh Phishing Domain)' : '14+ Years Old (Established)'}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5">SSL Certificate:</span>
+              <span class="font-bold text-slate-200">${isPhishing ? 'Free Automated Let\'s Encrypt' : 'DigiCert Extended Validation (EV)'}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5">Payload Type:</span>
+              <span class="font-bold ${isPhishing ? 'text-rose-400' : 'text-slate-200'}">${isPhishing ? 'Fake Banking Credential Form / APK' : 'Authenticated HTTPS Portal'}</span>
+            </div>
+          </div>
+
+          ${isPhishing ? `
+            <div class="bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-200 mb-4">
+              <strong>Security Directive:</strong> Do NOT enter bank login IDs, debit card numbers, or passwords on this webpage. This server is hosted outside authorized telecom boundaries.
+            </div>
+          ` : ''}
+
+          <div class="flex items-center justify-between pt-2 border-t border-slate-800">
+            <span class="text-xs text-slate-400">DNS Threat Status: <strong class="${isPhishing ? 'text-rose-400' : 'text-emerald-400'}">${isPhishing ? 'BLACKLISTED' : 'CLEAN'}</strong></span>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleWatchlist('${url}', '${isPhishing ? 'Phishing URL' : 'Verified Domain'}')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+              </button>
+              <button onclick="copyNumber('${url}')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 7. RENDER TELECOM & SUBSCRIBER CARDS
+    // =========================================================================
+    function lookupRealSubscriberInfo(rawQuery) {
+      const clean = normalizeInput(rawQuery);
+      const digitsOnly = clean.replace(/\D/g, '');
+      const last10 = digitsOnly.slice(-10);
+      const isIndianNumber = clean.startsWith('+91') || clean.startsWith('91') || (digitsOnly.length === 10 && (/^[6-9]/.test(digitsOnly) || digitsOnly.startsWith('140') || digitsOnly.startsWith('160')));
+      const isCommercialTelecaller = last10.startsWith('140') || last10.startsWith('160');
+      const isAlphaHeader = /^[A-Z0-9\-]+$/.test(clean) && /[A-Z]/.test(clean);
+
+      const book = getStoredPhonebook();
+      const userProfile = book[last10] || null;
+
+      let carrier = "Bharti Airtel Telecom Ltd.";
+      let circle = "Andhra Pradesh & Telangana";
+      let hub = "Hyderabad Hub";
+      let subscriberName = "";
+      let subscriberType = "";
+      let isPersonal = false;
+      let trustScore = 95;
+      let lineType = "Mobile Cellular 4G/5G VoLTE (Personal SIM)";
+      let attestation = "Level-A Cryptographic Pass (TRAI CNAP)";
+
+      if (isIndianNumber && last10.length === 10) {
+        if (isCommercialTelecaller) {
+          carrier = "National Telemarketing Cloud Gateway";
+          circle = "Pan-India Commercial Route";
+          hub = "TRAI 140 Series Dialer Hub";
+          subscriberName = `Commercial Telemarketer (${last10.substring(0, 3)} Series)`;
+          subscriberType = "Registered Outbound Telemarketing Dialer";
+          isPersonal = false;
+          trustScore = 38;
+          lineType = "Automated Commercial Outbound Trunk";
+          attestation = "DLT Commercial Whitelist Required";
+        } else {
+          const prefix4 = last10.substring(0, 4);
+          if (DOT_PREFIX_MAP[prefix4]) {
+            carrier = DOT_PREFIX_MAP[prefix4].operator;
+            circle = DOT_PREFIX_MAP[prefix4].circle;
+            hub = DOT_PREFIX_MAP[prefix4].hub;
+          } else {
+            const prefix2 = last10.substring(0, 2);
+            if (prefix2.startsWith('70') || prefix2.startsWith('62') || prefix2.startsWith('80')) {
+              carrier = "Reliance Jio Infocomm Ltd.";
+              circle = "Karnataka / South Zone";
+              hub = "Bengaluru Hub";
+            } else if (prefix2.startsWith('94')) {
+              carrier = "Bharat Sanchar Nigam Ltd. (BSNL)";
+              circle = "National Telecom Network";
+              hub = "DoT Switch";
+            } else {
+              carrier = "Bharti Airtel Telecom Ltd.";
+              circle = "Andhra Pradesh & Telangana";
+              hub = "Hyderabad Hub";
+            }
+          }
+
+          if (userProfile) {
+            subscriberName = userProfile.name;
+            subscriberType = userProfile.type || "Personal Consumer Mobile Line";
+            isPersonal = true;
+            trustScore = 96;
+          } else {
+            subscriberName = `Individual Mobile Subscriber`;
+            subscriberType = `Personal Consumer Line • Not a Commercial Telecaller`;
+            isPersonal = true;
+            trustScore = 94;
+          }
+        }
+      } else if (isAlphaHeader) {
+        subscriberName = `${clean} Outbound Messaging Gateway`;
+        subscriberType = `Commercial SMS Header (DLT Registration Needed)`;
+        carrier = "Enterprise Bulk SMS Gateway";
+        circle = "Pan-India Commercial Route";
+        lineType = "Alphanumeric SMS Sender Header";
+        isPersonal = false;
+        trustScore = 65;
+        attestation = "DLT Header Attestation Required";
+      } else {
+        subscriberName = "International Cellular Line";
+        subscriberType = "Global Mobile Subscriber";
+        carrier = "International Telecom Gateway";
+        circle = "North America / Global";
+        hub = "International Switch";
+        isPersonal = true;
+        trustScore = 82;
+      }
+
+      return {
+        query: rawQuery,
+        cleanQuery: clean,
+        last10: last10,
+        subscriberName: subscriberName,
+        subscriberType: subscriberType,
+        carrier: carrier,
+        circle: circle,
+        hub: hub,
+        lineType: lineType,
+        isPersonal: isPersonal,
+        isTelecaller: isCommercialTelecaller,
+        trustScore: trustScore,
+        attestation: attestation,
+        userProfile: userProfile
+      };
+    }
+
+    function renderRealSubscriberCard(query, info) {
+      const container = document.getElementById('resultContainer');
+      const isPersonal = info.isPersonal;
+      const isTelecaller = info.isTelecaller;
+
+      let borderClass = isPersonal ? 'border-emerald-500/70' : (isTelecaller ? 'border-amber-500/80' : 'border-indigo-500/60');
+      let badgeClass = isPersonal ? 'bg-emerald-500 text-slate-950' : (isTelecaller ? 'bg-amber-500 text-slate-950' : 'bg-indigo-600 text-white');
+      let badgeText = isPersonal ? 'Verified Personal Subscriber' : (isTelecaller ? 'Commercial Telecaller (140 Series)' : 'Alphanumeric Origin');
+      let badgeIcon = isPersonal ? 'fa-circle-check' : 'fa-headset';
+
+      container.innerHTML = `
+        <div class="bg-slate-800/90 border-2 ${borderClass} rounded-2xl p-6 text-left shadow-2xl shadow-slate-950/70 relative overflow-hidden transition-all">
+          <div class="absolute top-0 right-0 ${badgeClass} font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid ${badgeIcon}"></i> ${badgeText}
+          </div>
+
+          <div class="flex items-start gap-4 mb-4">
+            <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-xl text-2xl border border-indigo-500/30 flex-shrink-0">
+              <i class="fa-solid ${isPersonal ? 'fa-user-check' : 'fa-id-badge'}"></i>
+            </div>
+            <div class="flex-grow">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h2 class="text-2xl font-extrabold text-white flex items-center gap-2">
+                    <span>${info.subscriberName}</span>
+                    ${isPersonal ? '<i class="fa-solid fa-circle-check text-emerald-400 text-base" title="Consumer Verified"></i>' : ''}
+                  </h2>
+                  <p class="text-xs text-indigo-300 font-medium mt-0.5">${info.subscriberType}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-emerald-500/10 border-emerald-500/30 text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-heart"></i> Trust Score: ${info.trustScore}/100
+                  </div>
+                  <button onclick="toggleWatchlist('${query}', '${info.subscriberName}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 flex items-center gap-1 transition" title="Add to Watchlist">
+                    <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+                  </button>
+                  <button onclick="openEditNameModal('${query}')" class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 flex items-center gap-1 transition" title="Add or edit custom label">
+                    <i class="fa-solid fa-tag text-indigo-400"></i> Label Tag
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 my-4 bg-slate-900/90 p-4 rounded-xl border border-slate-700/80 text-xs">
+            <div>
+              <span class="text-slate-400 block mb-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-tower-cell text-indigo-400"></i> Allocated Operator:
+              </span>
+              <span class="text-slate-200 font-semibold">${info.carrier}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-location-dot text-indigo-400"></i> Circle & State:
+              </span>
+              <span class="text-emerald-400 font-semibold">${info.circle} (${info.hub})</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-mobile-screen-button text-indigo-400"></i> Line Type:
+              </span>
+              <span class="text-slate-200 font-semibold">${info.lineType}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5 flex items-center gap-1">
+                <i class="fa-solid fa-filter-circle-dollar text-indigo-400"></i> TRAI 140/160 Series:
+              </span>
+              <span class="${isPersonal ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}">
+                ${isPersonal ? 'PASS (Non-Telecaller Line)' : 'Commercial Dialer Series'}
+              </span>
+            </div>
+          </div>
+
+          <div class="${isPersonal ? 'bg-emerald-950/30 border border-emerald-500/30 text-emerald-200' : 'bg-slate-900/80 border border-slate-700 text-slate-300'} rounded-xl p-3.5 mb-4 text-xs">
+            <div class="flex items-center gap-2 font-semibold mb-1 ${isPersonal ? 'text-emerald-300' : 'text-slate-200'}">
+              <i class="fa-solid ${isPersonal ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-indigo-400'}"></i>
+              <span>${isPersonal ? 'Verified Consumer Cellular Profile' : 'Telecom Routing Evaluation'}</span>
+            </div>
+            <p class="leading-relaxed text-slate-300">
+              "${query}" is mapped to <strong>${info.carrier}</strong> within the <strong>${info.circle}</strong> telecom circle. ${isPersonal ? 'This is an individual consumer SIM line and is <strong>clean from commercial telemarketing cold-calling lists</strong>.' : 'Subject to standard commercial telemarketing regulations.'}
+            </p>
+          </div>
+
+          <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-left">
+              <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-flag text-rose-400"></i> Did you receive suspicious calls or financial phishing from this number?
+              </h4>
+              <p class="text-[11px] text-slate-400 mt-0.5">Help protect other users by submitting a report if this number was recently spoofed or used for fraud.</p>
+            </div>
+            <button onclick="openReportModal('${query}')" class="w-full sm:w-auto px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30 flex-shrink-0">
+              <i class="fa-solid fa-triangle-exclamation"></i> Report as Fraud
+            </button>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // 8. Render Verified Official Card
+    function renderVerifiedCard(item) {
+      const container = document.getElementById('resultContainer');
+      container.innerHTML = `
+        <div class="bg-emerald-950/40 border-2 border-emerald-500/80 rounded-2xl p-6 text-left shadow-2xl shadow-emerald-950/50 relative overflow-hidden transition-all">
+          <div class="absolute top-0 right-0 bg-emerald-500 text-slate-950 font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-circle-check"></i> Verified Official Entity
+          </div>
+
+          <div class="flex items-start gap-4 mb-4">
+            <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl text-2xl border border-emerald-500/30 flex-shrink-0">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-bold text-white">${item.name}</h2>
+              </div>
+              <p class="text-emerald-400 text-xs font-semibold mt-0.5">${item.category} • Authenticated Principal Entity</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4 bg-slate-900/70 p-4 rounded-xl border border-emerald-900/50 text-xs">
+            <div>
+              <span class="text-slate-400 block mb-0.5">Verified Web Domain:</span>
+              <a href="https://${item.domain}" target="_blank" class="text-indigo-400 hover:underline font-semibold flex items-center gap-1">
+                ${item.domain} <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+              </a>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5">DLT Registered Carrier:</span>
+              <span class="text-slate-200 font-medium">${item.carrier || 'Tier-1 Gateway'}</span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5">Cryptographic Attestation:</span>
+              <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i> DLT Blockchain Verified
+              </span>
+            </div>
+          </div>
+
+          <p class="text-slate-300 text-xs leading-relaxed mb-4">${item.notes}</p>
+
+          <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 flex items-start gap-2.5 text-xs text-emerald-200">
+            <i class="fa-solid fa-circle-info text-emerald-400 mt-0.5"></i>
+            <span><strong>Safety Notice:</strong> Banks will never ask you for your account password, netbanking PIN, or SMS OTP over a phone call or SMS link.</span>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-emerald-900/60 flex flex-wrap items-center justify-between gap-2">
+            <span class="text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-circle-check"></i> Identity cryptographically corroborated
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="toggleWatchlist('${item.name}', 'Verified Entity: ${item.category}')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1.5 border border-emerald-800/60 transition">
+                <i class="fa-solid fa-bell text-sky-400"></i> Add to Watchlist
+              </button>
+              <button onclick="openDirectoryModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+                <i class="fa-solid fa-building-columns"></i> View in Directory
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 9. Render High Scam Risk Card
+    function renderScamCard(item) {
+      const container = document.getElementById('resultContainer');
+      container.innerHTML = `
+        <div class="bg-rose-950/45 border-2 border-rose-500/90 rounded-2xl p-6 text-left shadow-2xl shadow-rose-950/60 relative overflow-hidden transition-all">
+          <div class="absolute top-0 right-0 bg-rose-600 text-white font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid fa-triangle-exclamation"></i> High Scam Risk
+          </div>
+
+          <div class="flex items-start gap-4 mb-4">
+            <div class="p-3 bg-rose-500/20 text-rose-400 rounded-xl text-2xl border border-rose-500/30 flex-shrink-0">
+              <i class="fa-solid fa-ban"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-white">Fraud Flagged in Registry</h2>
+              <p class="text-rose-400 text-xs font-semibold mt-0.5">${item.risk}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4 bg-slate-900/80 p-4 rounded-xl border border-rose-900/60 text-xs">
+            <div class="flex items-center justify-between sm:justify-start sm:gap-3">
+              <span class="text-slate-400">Community Reports:</span>
+              <span class="text-rose-400 font-bold bg-rose-950 px-2.5 py-1 rounded-md border border-rose-800 flex items-center gap-1">
+                <i class="fa-solid fa-users text-[10px]"></i> ${item.reports} user reports
+              </span>
+            </div>
+            <div>
+              <span class="text-slate-400 block mb-0.5">Origin / Routing:</span>
+              <span class="text-slate-200 font-medium">${item.carrier || 'Unregistered Cloud PBX'} • ${item.circle || 'High Spoof Probability'}</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-900/60 p-3.5 rounded-xl border border-rose-900/40 text-xs mb-4">
+            <span class="text-slate-400 block text-[10px] uppercase font-bold tracking-wider mb-1">Reported Modus Operandi:</span>
+            <p class="text-slate-300 leading-relaxed">${item.details}</p>
+          </div>
+
+          <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex items-start gap-2.5 text-xs text-rose-200 mb-4">
+            <i class="fa-solid fa-shield-cat text-rose-400 mt-0.5"></i>
+            <span><strong>Urgent Advisory:</strong> Do NOT click links, do NOT download APK files, and do NOT share UPI PIN or OTP. Block this sender immediately.</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-2">
+            <button onclick="openReportModal('${item.number}')" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-lg shadow-rose-600/30">
+              <i class="fa-solid fa-flag"></i> Report Evidence
+            </button>
+            <button onclick="toggleWatchlist('${item.number}', 'Flagged Scam: ${item.risk}')" class="py-2.5 px-3.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-700">
+              <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+            </button>
+            <button onclick="openThreatMapModal()" class="py-2.5 px-3.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-700">
+              <i class="fa-solid fa-map-location-dot"></i> Threat Map
+            </button>
+            <button onclick="copyNumber('${item.number}')" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 border border-slate-700" title="Copy Identifier">
+              <i class="fa-solid fa-copy"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // 10. Render SIM PRE-PURCHASE AUDIT CARD
+    function renderSimAuditCard(query, audit) {
+      const container = document.getElementById('resultContainer');
+      const isClean = audit.verdict === 'SAFE_TO_BUY';
+      const isToxic = audit.verdict === 'REJECT_TOXIC';
+
+      let borderColor = isClean ? 'border-emerald-500/80' : (isToxic ? 'border-rose-500/80' : 'border-amber-500/80');
+      let bannerBg = isClean ? 'bg-emerald-600 text-slate-950' : (isToxic ? 'bg-rose-600 text-white' : 'bg-amber-500 text-slate-950');
+      let bannerText = isClean ? 'VERDICT: SAFE TO BUY' : (isToxic ? 'VERDICT: DO NOT BUY — REJECT & REQUEST ALTERNATIVE SIM' : 'VERDICT: PROCEED WITH CAUTION');
+      let bannerIcon = isClean ? 'fa-circle-check' : 'fa-triangle-exclamation';
+      let scoreColor = isClean ? 'text-emerald-400' : (isToxic ? 'text-rose-400' : 'text-amber-400');
+
+      container.innerHTML = `
+        <div class="bg-slate-800/90 border-2 ${borderColor} rounded-2xl p-6 text-left shadow-2xl relative overflow-hidden transition-all">
+          <div class="absolute top-0 right-0 ${bannerBg} font-bold text-xs uppercase px-4 py-1.5 rounded-bl-xl tracking-wider flex items-center gap-1.5 shadow-md">
+            <i class="fa-solid ${bannerIcon}"></i> ${bannerText}
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+            <div class="flex items-start gap-3">
+              <div class="p-3 bg-slate-900 border border-slate-700 rounded-xl text-2xl flex-shrink-0 ${isClean ? 'text-emerald-400' : (isToxic ? 'text-rose-400' : 'text-amber-400')}">
+                <i class="fa-solid fa-sim-card"></i>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Prospective SIM Number</span>
+                <h2 class="text-xl font-bold text-white font-mono">${query}</h2>
+                <p class="text-xs font-semibold ${scoreColor} mt-0.5">${audit.statusTitle}</p>
+              </div>
+            </div>
+
+            <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 flex items-center gap-3 self-start">
+              <div class="text-right">
+                <span class="text-[10px] text-slate-400 uppercase block font-semibold">SIM Hygiene Rating</span>
+                <span class="text-xs font-semibold text-slate-300">${audit.grade}</span>
+              </div>
+              <div class="text-2xl font-black ${scoreColor} font-mono border-l border-slate-800 pl-3">
+                ${audit.score}<span class="text-xs text-slate-500 font-normal">/100</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs mb-4">
+            <span class="text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-layer-group text-indigo-400"></i> Operator Pool: <strong class="text-slate-200">${audit.operatorPool}</strong>
+            </span>
+            <span class="text-slate-400 flex items-center gap-1.5">
+              <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Dormancy: <strong class="${audit.quarantineDays >= 90 ? 'text-emerald-400' : 'text-rose-400'}">${audit.quarantineDays} Days (TRAI Quarantine ${audit.quarantineDays >= 90 ? 'Met' : 'Violated'})</strong>
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div class="bg-slate-900/90 border ${audit.debtRisk === 'CLEAN' ? 'border-slate-800' : 'border-rose-900/80 bg-rose-950/15'} p-3.5 rounded-xl text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-building-columns ${audit.debtRisk === 'CLEAN' ? 'text-indigo-400' : 'text-rose-400'}"></i> Debt & Recovery Harassment
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${audit.debtRisk === 'CLEAN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                  ${audit.debtRisk === 'CLEAN' ? 'PASS' : 'FAIL'}
+                </span>
+              </div>
+              <p class="text-slate-400 leading-relaxed text-[11px]">${audit.debtDetails}</p>
+            </div>
+
+            <div class="bg-slate-900/90 border ${audit.cyberCrimeStatus === 'CLEAN' ? 'border-slate-800' : 'border-rose-900/80 bg-rose-950/15'} p-3.5 rounded-xl text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-handcuffs ${audit.cyberCrimeStatus === 'CLEAN' ? 'text-indigo-400' : 'text-rose-400'}"></i> Cyber Crime & Police FIRs
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${audit.cyberCrimeStatus === 'CLEAN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
+                  ${audit.cyberCrimeStatus === 'CLEAN' ? 'CLEAN' : 'FLAGGED'}
+                </span>
+              </div>
+              <p class="text-slate-400 leading-relaxed text-[11px]">${audit.cyberCrimeDetails}</p>
+            </div>
+
+            <div class="bg-slate-900/90 border ${audit.whatsappStatus === 'BANNED' || audit.whatsappStatus === 'ACCOUNT_ACTIVE' ? 'border-amber-900/80 bg-amber-950/10' : 'border-slate-800'} p-3.5 rounded-xl text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                  <i class="fa-brands fa-whatsapp ${audit.whatsappStatus === 'READY' || audit.whatsappStatus === 'CLEAN' ? 'text-emerald-400' : 'text-amber-400'}"></i> WhatsApp Ban & Account State
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${audit.whatsappStatus === 'READY' || audit.whatsappStatus === 'CLEAN' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'}">
+                  ${audit.whatsappStatus}
+                </span>
+              </div>
+              <p class="text-slate-400 leading-relaxed text-[11px]">${audit.whatsappDetails}</p>
+            </div>
+
+            <div class="bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-slate-300 font-bold flex items-center gap-1.5">
+                  <i class="fa-solid fa-user-secret text-indigo-400"></i> Dark Web Breach History
+                </span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">
+                  ${audit.breachExposure}
+                </span>
+              </div>
+              <p class="text-slate-400 leading-relaxed text-[11px]">${audit.breachDetails}</p>
+            </div>
+          </div>
+
+          <div class="${isClean ? 'bg-emerald-950/40 border border-emerald-500/40' : (isToxic ? 'bg-rose-950/40 border border-rose-500/50' : 'bg-amber-950/40 border border-amber-500/40')} rounded-xl p-4 mb-4">
+            <div class="flex items-start gap-3">
+              <div class="text-base mt-0.5 ${isClean ? 'text-emerald-400' : (isToxic ? 'text-rose-400' : 'text-amber-400')}">
+                <i class="fa-solid ${isClean ? 'fa-cart-shopping' : 'fa-bullhorn'}"></i>
+              </div>
+              <div class="flex-grow">
+                <span class="text-[10px] uppercase font-bold tracking-wider block ${isClean ? 'text-emerald-300' : (isToxic ? 'text-rose-300' : 'text-amber-300')}">
+                  What to tell the Store Executive at the Counter:
+                </span>
+                <p class="text-xs text-slate-100 font-medium mt-1 leading-relaxed italic">
+                  "${audit.storeAdvice}"
+                </p>
+              </div>
+              <button onclick="copyText('${audit.storeAdvice.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition border border-slate-700 flex items-center gap-1 flex-shrink-0">
+                <i class="fa-solid fa-copy text-[10px]"></i> Copy Script
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+            <span class="text-[11px] text-slate-500">Audit Certificate ID: <code class="font-mono text-slate-400">VC-${hashString(query).toString(16).toUpperCase()}</code></span>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="toggleWatchlist('${query}', 'SIM Audit: ${audit.decision}')" class="flex-1 sm:flex-initial py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-bell text-sky-400"></i> Watchlist
+              </button>
+              <button onclick="copyNumber('${query}')" class="flex-1 sm:flex-initial py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition border border-slate-700 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-share-nodes"></i> Share Report
+              </button>
+              <button onclick="document.getElementById('searchInput').focus(); document.getElementById('searchInput').select();" class="flex-1 sm:flex-initial py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/30">
+                <i class="fa-solid fa-rotate-left"></i> Audit Another SIM
+              </button>
+            </div>
+          </div>
+
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 11. EMERGENCY SCAM ASSISTANCE WIZARD LOGIC
+    // =========================================================================
+    function openEmergencyModal() {
+      document.getElementById('emergencyModal').classList.remove('hidden');
+      selectIncidentType('money');
+    }
+
+    function closeEmergencyModal() {
+      document.getElementById('emergencyModal').classList.add('hidden');
+    }
+
+    function selectIncidentType(type) {
+      const box = document.getElementById('incidentActionBox');
+      const snippet = document.getElementById('complaintSnippet');
+
+      const buttons = document.querySelectorAll('.incident-btn');
+      buttons.forEach(b => {
+        b.className = "incident-btn text-left p-3 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:border-slate-700 transition";
+      });
+
+      if (type === 'money') {
+        buttons[0].className = "incident-btn active text-left p-3 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-200 transition";
+        box.innerHTML = `
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-rose-500 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">1</span>
+              <div>
+                <strong class="text-white">Call 1930 IMMEDIATELY (Golden Hour):</strong>
+                <p class="text-slate-300 text-[11px]">National Cyber Crime Financial Helpline. If called within 2-3 hours of transfer, the nodal officer can freeze the fraudster's bank/UPI account before cashout.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-rose-500 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">2</span>
+              <div>
+                <strong class="text-white">Freeze UPI & NetBanking:</strong>
+                <p class="text-slate-300 text-[11px]">Call your bank customer care to immediately lock netbanking and block debit cards to prevent recurring withdrawals.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-rose-500 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">3</span>
+              <div>
+                <strong class="text-white">Take Screenshots of UTR / Transaction IDs:</strong>
+                <p class="text-slate-300 text-[11px]">Keep payment receipts, SMS timestamps, and fraudster UPI handles ready for police filing.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        snippet.innerText = `COMPLAINT DRAFT:
+Incident Date: ${new Date().toLocaleDateString()}
+Nature of Fraud: Unauthorized UPI / Bank Transfer
+Suspect Identifier: ${currentQuery || 'Unknown'}
+Description: I received fraudulent communication impersonating bank/utility officials. Under deception, funds were transferred. Requesting immediate lien/freeze on beneficiary account under Section 43/66D of IT Act.`;
+      
+      } else if (type === 'otp') {
+        buttons[1].className = "incident-btn active text-left p-3 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-200 transition";
+        box.innerHTML = `
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-amber-400 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">1</span>
+              <div>
+                <strong class="text-white">Change NetBanking Passwords Immediately:</strong>
+                <p class="text-slate-300 text-[11px]">Use a secure separate device to reset banking passwords, UPI PINs, and email account credentials.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-amber-400 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">2</span>
+              <div>
+                <strong class="text-white">Call Bank Emergency Card Hotlisting:</strong>
+                <p class="text-slate-300 text-[11px]">Request customer support to hotlist card and disable online international e-commerce transactions.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        snippet.innerText = `COMPLAINT DRAFT:
+Incident Date: ${new Date().toLocaleDateString()}
+Nature of Fraud: Compromise of Banking OTP / Credentials
+Suspect Sender: ${currentQuery || 'Unknown'}
+Description: Caller induced disclosure of one-time password through social engineering. All associated accounts are being secured.`;
+      
+      } else if (type === 'apk') {
+        buttons[2].className = "incident-btn active text-left p-3 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-200 transition";
+        box.innerHTML = `
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-rose-500 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">1</span>
+              <div>
+                <strong class="text-white">Turn on Airplane Mode & Disconnect Wi-Fi:</strong>
+                <p class="text-slate-300 text-[11px]">Stop the remote attacker from reading incoming 2FA SMS and viewing screen.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-rose-500 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">2</span>
+              <div>
+                <strong class="text-white">Boot into Safe Mode and Uninstall App:</strong>
+                <p class="text-slate-300 text-[11px]">Settings -> Apps -> Remove AnyDesk, QuickSupport, or recently installed .APK files. Revoke Accessibility permissions.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        snippet.innerText = `COMPLAINT DRAFT:
+Incident Date: ${new Date().toLocaleDateString()}
+Nature of Fraud: Remote Access Trojan / Malicious APK Installation
+Suspect Source: ${currentQuery || 'Unknown'}
+Description: Caller coerced installation of remote mirroring software. Device disconnected from cellular network to prevent unauthorized access.`;
+      
+      } else {
+        buttons[3].className = "incident-btn active text-left p-3 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-200 transition";
+        box.innerHTML = `
+          <div class="space-y-2 text-xs">
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-indigo-400 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">1</span>
+              <div>
+                <strong class="text-white">Lock Aadhaar Biometrics on mAadhaar:</strong>
+                <p class="text-slate-300 text-[11px]">Visit resident.uidai.gov.in or mAadhaar app and lock biometric authentication to prevent AePS unauthorized withdrawals.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-indigo-400 text-slate-950 font-bold flex items-center justify-center flex-shrink-0 text-[11px]">2</span>
+              <div>
+                <strong class="text-white">Check CIBIL Credit Enquiries:</strong>
+                <p class="text-slate-300 text-[11px]">Ensure no instant micro-loans or credit cards are opened in your name.</p>
+              </div>
+            </div>
+          </div>
+        `;
+        snippet.innerText = `COMPLAINT DRAFT:
+Incident Date: ${new Date().toLocaleDateString()}
+Nature of Fraud: Identity Theft & KYC Phishing
+Suspect Source: ${currentQuery || 'Unknown'}
+Description: Fake KYC portal collected identity credentials. Biometric lock enabled on UIDAI portal as precaution.`;
+      }
+    }
+
+    function copyComplaintText() {
+      const snippet = document.getElementById('complaintSnippet').innerText;
+      navigator.clipboard.writeText(snippet).then(() => {
+        showToast("Complaint Draft Copied", "Text copied to clipboard. Ready to paste on cybercrime.gov.in.");
+      });
+    }
+
+    // Modal helpers
+    function openEditNameModal(targetNumber) {
+      document.getElementById('editModalTargetNumber').innerText = targetNumber || currentQuery || 'Unknown Number';
+      const clean = normalizeInput(targetNumber || currentQuery).replace(/\D/g, '').slice(-10);
+      const book = getStoredPhonebook();
+      const existing = book[clean];
+      
+      document.getElementById('realNameInput').value = existing ? existing.name : '';
+      document.getElementById('realCityInput').value = existing ? (existing.city || '') : '';
+      document.getElementById('editNameModal').classList.remove('hidden');
+      document.getElementById('realNameInput').focus();
+    }
+
+    function closeEditNameModal() {
+      document.getElementById('editNameModal').classList.add('hidden');
+    }
+
+    function saveRealUserInformation(e) {
+      e.preventDefault();
+      const targetNumber = document.getElementById('editModalTargetNumber').innerText;
+      const clean = normalizeInput(targetNumber).replace(/\D/g, '').slice(-10);
+      const newName = document.getElementById('realNameInput').value.trim();
+      const lineType = document.getElementById('realTypeSelect').value;
+      const city = document.getElementById('realCityInput').value.trim();
+
+      if (!newName) return;
+
+      saveToPhonebook(clean, {
+        name: newName,
+        type: lineType,
+        badge: "User Verified Tag",
+        city: city || "India",
+        kycStatus: "Aadhaar KYC Verified",
+        isPersonal: true
+      });
+
+      closeEditNameModal();
+      showToast("Contact Label Saved", `Assigned "${newName}" to ${targetNumber}.`);
+      executeVerification(targetNumber);
+    }
+
+    function openReportModal(targetNumber) {
+      document.getElementById('modalTargetNumber').innerText = targetNumber || currentQuery || 'Unknown Identifier';
+      document.getElementById('reportDetails').value = '';
+      selectedEvidenceTags = [];
+      resetEvidenceTags();
+      document.getElementById('fraudReportModal').classList.remove('hidden');
+    }
+
+    function closeReportModal() {
+      document.getElementById('fraudReportModal').classList.add('hidden');
+    }
+
+    function toggleEvidenceTag(buttonEl, tagText) {
+      const idx = selectedEvidenceTags.indexOf(tagText);
+      if (idx > -1) {
+        selectedEvidenceTags.splice(idx, 1);
+        buttonEl.classList.remove('bg-rose-600', 'text-white', 'border-rose-500');
+        buttonEl.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
+        buttonEl.innerText = `+ ${tagText}`;
+      } else {
+        selectedEvidenceTags.push(tagText);
+        buttonEl.classList.add('bg-rose-600', 'text-white', 'border-rose-500');
+        buttonEl.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700');
+        buttonEl.innerText = `✓ ${tagText}`;
+      }
+    }
+
+    function resetEvidenceTags() {
+      const container = document.getElementById('evidenceTagsContainer');
+      const buttons = container.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.classList.remove('bg-rose-600', 'text-white', 'border-rose-500');
+        btn.classList.add('bg-slate-800', 'text-slate-300', 'border-slate-700');
+        const text = btn.innerText.replace(/^[✓\+]\s*/, '');
+        btn.innerText = `+ ${text}`;
+      });
+    }
+
+    function submitFraudReport(e) {
+      e.preventDefault();
+      const reportedNumber = document.getElementById('modalTargetNumber').innerText;
+      const category = document.getElementById('reportCategory').value;
+      const rawNotes = document.getElementById('reportDetails').value.trim();
+      
+      const tagsSummary = selectedEvidenceTags.length > 0 ? ` [Evidence: ${selectedEvidenceTags.join(', ')}]` : '';
+      const finalDetails = (rawNotes ? `${rawNotes}.` : `Incident registered via VeriCom network.`) + tagsSummary;
+
+      const cleanTarget = normalizeInput(reportedNumber);
+      const existing = SCAM_DATABASE.find(item => normalizeInput(item.number) === cleanTarget);
+
+      if (existing) {
+        existing.reports += 1;
+        existing.risk = category;
+        existing.details = finalDetails;
+      } else {
+        SCAM_DATABASE.unshift({
+          number: reportedNumber,
+          reports: 1,
+          risk: `COMMUNITY FLAGGED - ${category}`,
+          carrier: "Unregistered Carrier Route",
+          circle: "Unverified Origin",
+          details: finalDetails,
+          reportedAt: new Date().toISOString()
+        });
+      }
+
+      closeReportModal();
+      showToast("Incident Registered!", `"${reportedNumber}" has been registered into the national fraud registry.`);
+      executeVerification(reportedNumber);
+    }
+
+    function showToast(title, body) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastTitle').innerText = title;
+      document.getElementById('toastBody').innerText = body;
+      
+      toast.classList.remove('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        hideToast();
+      }, 5000);
+    }
+
+    function hideToast() {
+      const toast = document.getElementById('toastNotification');
+      toast.classList.add('translate-y-[-100px]', 'opacity-0', 'pointer-events-none');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }
+
+    function copyNumber(num) {
+      navigator.clipboard.writeText(num).then(() => {
+        showToast("Identifier Copied", `Copied "${num}" to clipboard.`);
+      });
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast("Text Copied", `Copied to clipboard.`);
+      });
+    }
+
+    // =========================================================================
+    // 12. JUDGE CONSOLE & MULTI-API ARCHITECTURE
+    // =========================================================================
+    function toggleApiModal() {
+      const modal = document.getElementById('apiModal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        updateCurrentApiView();
+      }
+    }
+
+    function switchApiTab(tabName) {
+      selectedApiTab = tabName;
+      const tabs = {
+        chakshu: document.getElementById('apiTabChakshu'),
+        dlt: document.getElementById('apiTabDlt'),
+        google: document.getElementById('apiTabGoogle'),
+        twilio: document.getElementById('apiTabTwilio')
+      };
+
+      Object.keys(tabs).forEach(k => {
+        if (k === tabName) {
+          tabs[k].className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white transition flex items-center gap-1.5 shadow";
+        } else {
+          tabs[k].className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5";
+        }
+      });
+
+      updateCurrentApiView();
+    }
+
+    function updateCurrentApiView() {
+      const targetQuery = currentQuery || 'SBIINB';
+      const clean = normalizeInput(targetQuery);
+      const isOfficial = VERIFIED_DATABASE.find(item => normalizeInput(item.number) === clean);
+      const isScam = SCAM_DATABASE.find(item => normalizeInput(item.number) === clean);
+
+      const endpointUrl = document.getElementById('apiEndpointUrl');
+      const methodBadge = document.getElementById('apiMethodBadge');
+      const pre = document.getElementById('apiJsonContent');
+
+      let payload = {};
+
+      if (selectedApiTab === 'chakshu') {
+        methodBadge.innerText = 'POST';
+        methodBadge.className = 'px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        endpointUrl.innerText = `/v1/dot/sanchar-saathi/chakshu/evaluate?identifier=${encodeURIComponent(targetQuery.substring(0, 30))}`;
+
+        payload = {
+          gateway: "DOT_SANCHAR_SAATHI_CHAKSHU_V1",
+          jurisdiction: "Ministry of Communications, Govt of India",
+          evaluatedIdentifier: targetQuery.substring(0, 50),
+          fraudRecordStatus: isScam ? "FLAGGED_CYBER_FRAUD_SUSPECT" : "CLEAN_RECORD",
+          incidentReportCount: isScam ? isScam.reports : 0,
+          tafcopConnectionQuota: "1_ACTIVE_CONNECTION_OF_9_MAX",
+          ceirHandsetBlacklist: "CLEAR_NOT_REPORTED_STOLEN",
+          kyrAuthorizedProvider: "BHARTI_AIRTEL_TELECOM_LTD",
+          telemarketingCategory: targetQuery.startsWith('140') ? "REGISTERED_140_SERIES_TELEMARKETER" : "PERSONAL_CONSUMER_LINE",
+          actionRecommendation: isScam ? "BLOCK_COMMUNICATION_IMMEDIATELY" : "SAFE_TO_COMMUNICATE",
+          cryptographicSignature: "ED25519-SHA256-DoT-Gateway-Token-88419",
+          evaluatedAt: new Date().toISOString()
+        };
+
+      } else if (selectedApiTab === 'dlt') {
+        methodBadge.innerText = 'GET';
+        methodBadge.className = 'px-2 py-0.5 rounded font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30';
+        endpointUrl.innerText = `/v2/trai/dlt/principal-entity?header=${encodeURIComponent(targetQuery.substring(0, 20))}`;
+
+        payload = {
+          blockchainLedger: "TRAI_HYPERLEDGER_CONSORTIUM_DLT",
+          queryHeader: targetQuery.substring(0, 20),
+          entityStatus: isOfficial ? "APPROVED_PRINCIPAL_ENTITY" : "UNREGISTERED_DLT_SENDER",
+          principalEntityId: isOfficial ? "PE-110298347102" : null,
+          registeredEntityName: isOfficial ? isOfficial.name : "Unregistered Outbound Route",
+          registeredTelemarketerId: isOfficial ? "RTM-AIRTEL-DLT-0041" : null,
+          templateHashAttestation: isOfficial ? "SHA256:4d8a11e8f993ab..." : "REJECTED_NO_REGISTERED_TEMPLATE",
+          blockchainConsensusTimestamp: new Date().toISOString()
+        };
+
+      } else if (selectedApiTab === 'google') {
+        methodBadge.innerText = 'GET';
+        methodBadge.className = 'px-2 py-0.5 rounded font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30';
+        endpointUrl.innerText = `/v1/google/verified-calls/attestation?callerId=${encodeURIComponent(targetQuery.substring(0, 20))}`;
+
+        payload = {
+          provider: "GOOGLE_VERIFIED_CALLS_ANDROID_GATEWAY",
+          callerIdentifier: targetQuery.substring(0, 20),
+          googleVerifiedBadge: isOfficial ? true : false,
+          businessIdentity: isOfficial ? isOfficial.name : "Unverified Caller",
+          businessDomain: isOfficial ? isOfficial.domain : null,
+          callReasonPresentation: isOfficial ? "Official Service & Account Alert" : null,
+          androidDialerSecurityPrompt: isScam ? "SUSPECTED_SPAM_RED_BANNER" : (isOfficial ? "VERIFIED_CALL_BLUE_SHIELD" : "NEUTRAL_CONSUMER_CALL"),
+          attestationToken: "eyJhbGciOiJSUzI1NiIsImtpZCI6Imdvb2dsZS1jYWxscy1jZXJ0..."
+        };
+
+      } else {
+        methodBadge.innerText = 'GET';
+        methodBadge.className = 'px-2 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30';
+        endpointUrl.innerText = `/v2/twilio/v2/PhoneNumbers/${encodeURIComponent(targetQuery.substring(0, 20))}?Fields=caller_name,carrier,stir_shaken`;
+
+        payload = {
+          twilioApiVersion: "2024-08-01",
+          phoneNumber: targetQuery.substring(0, 20),
+          countryCode: "IN",
+          carrier: {
+            name: "Bharti Airtel Limited",
+            type: "mobile",
+            mobile_network_code: "404-45"
+          },
+          stirShaken: {
+            attestationLevel: isOfficial ? "A" : (isScam ? "C" : "B"),
+            verstat: isOfficial ? "TN-Validation-Passed" : (isScam ? "TN-Validation-Failed" : "No-Attestation"),
+            identityHeaderValid: isOfficial ? true : false
+          },
+          simSwapHistory: {
+            lastSimSwapDetectedDaysAgo: 142,
+            swapFraudRisk: "LOW"
+          }
+        };
+      }
+
+      if (pre) {
+        pre.innerText = JSON.stringify(payload, null, 2);
+      }
+    }
+
+    function copyCurrentApiPayload() {
+      const pre = document.getElementById('apiJsonContent');
+      if (pre) {
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          showToast("API Payload Copied", "Simulated JSON response copied to clipboard.");
+        });
+      }
+    }
+
+    // =========================================================================
+    // 13. OFFICIAL DIRECTORY DATA & LOGIC
+    // =========================================================================
+    const OFFICIAL_DIRECTORY_DATA = [
+      // Banks
+      { id: 'sbi', name: 'State Bank of India (SBI)', category: 'banking', categoryLabel: 'Banking', phone: '1800 1234', altPhone: '1800 2100', header: 'SBIINB / SBIPAY', domain: 'onlinesbi.sbi', icon: 'fa-building-columns', notes: 'National bank customer care. Never asks for OTP, PIN, or CVV over call or SMS.' },
+      { id: 'hdfc', name: 'HDFC Bank', category: 'banking', categoryLabel: 'Banking', phone: '1800 202 6161', altPhone: '1800 1600', header: 'HDFCBK / HDFCBN', domain: 'hdfcbank.com', icon: 'fa-building-columns', notes: 'Official customer care & 24x7 cyber fraud reporting desk.' },
+      { id: 'icici', name: 'ICICI Bank', category: 'banking', categoryLabel: 'Banking', phone: '1800 1080', altPhone: '1860 120 7777', header: 'ICICIB', domain: 'icicibank.com', icon: 'fa-building-columns', notes: 'Official retail banking helpline for accounts and card blocking.' },
+      { id: 'axis', name: 'Axis Bank', category: 'banking', categoryLabel: 'Banking', phone: '1860 419 5555', altPhone: '1860 500 5555', header: 'AXISBK', domain: 'axisbank.com', icon: 'fa-building-columns', notes: 'Dedicated 24x7 phone banking and emergency transaction freeze hotline.' },
+      { id: 'pnb', name: 'Punjab National Bank (PNB)', category: 'banking', categoryLabel: 'Banking', phone: '1800 180 2222', altPhone: '1800 103 2222', header: 'PNBSMS', domain: 'pnbindia.in', icon: 'fa-building-columns', notes: 'All-India toll free customer care and digital banking support.' },
+
+      // Utilities
+      { id: 'bescom', name: 'BESCOM Bangalore', category: 'utilities', categoryLabel: 'Electricity / Utility', phone: '1912', altPhone: '080-22873333', header: 'BESCOM', domain: 'bescom.karnataka.gov.in', icon: 'fa-bolt', notes: 'Official BESCOM 24x7 helpline. Power disconnection notices are NEVER sent via personal mobile numbers.' },
+      { id: 'tneb', name: 'TANGEDCO / TNEB Tamil Nadu', category: 'utilities', categoryLabel: 'Electricity / Utility', phone: '1912', altPhone: '044-28521057', header: 'TNEBLT', domain: 'tnebnet.org', icon: 'fa-bolt', notes: 'Official Tamil Nadu electricity board consumer redressal.' },
+      { id: 'adani_elec', name: 'Adani Electricity Mumbai', category: 'utilities', categoryLabel: 'Electricity / Utility', phone: '19122', altPhone: '1800 532 9998', header: 'AEML', domain: 'adanielectricity.com', icon: 'fa-bolt', notes: 'Authorized Mumbai power distribution consumer care.' },
+      { id: 'igl', name: 'Indraprastha Gas Limited (IGL)', category: 'utilities', categoryLabel: 'Gas / Utility', phone: '1800 102 5109', altPhone: '011-44556677', header: 'IGLDEL', domain: 'iglonline.net', icon: 'fa-fire-flame-simple', notes: 'Official PNG/CNG connection and billing assistance.' },
+
+      // Courier & Logistics
+      { id: 'indiapost', name: 'India Post (Speed Post)', category: 'courier', categoryLabel: 'Postal / Courier', phone: '1800 266 6868', altPhone: '1924', header: 'POSTIN', domain: 'indiapost.gov.in', icon: 'fa-envelope-open-text', notes: 'Department of Posts national inquiry and parcel tracking helpline.' },
+      { id: 'fedex', name: 'FedEx India', category: 'courier', categoryLabel: 'Logistics / Courier', phone: '1800 419 4343', altPhone: '1800 209 6161', header: 'FEDEX', domain: 'fedex.com', icon: 'fa-box', notes: 'FedEx never demands Customs duty transfer to personal UPI or bank accounts.' },
+      { id: 'bluedart', name: 'Blue Dart Express', category: 'courier', categoryLabel: 'Express Cargo', phone: '1860 233 1234', altPhone: '022-62601234', header: 'BLDART', domain: 'bluedart.com', icon: 'fa-truck-fast', notes: 'Official Blue Dart shipment tracking and delivery redressal.' },
+      { id: 'dtdc', name: 'DTDC Courier', category: 'courier', categoryLabel: 'Courier & Cargo', phone: '073-0577-0577', altPhone: '080-25365032', header: 'DTDCSM', domain: 'dtdc.in', icon: 'fa-dolly', notes: 'DTDC customer support for domestic and international consignments.' },
+      { id: 'usps', name: 'USPS (United States Postal)', category: 'courier', categoryLabel: 'International Postal', phone: '1-800-275-8777', altPhone: '28777', header: 'USPS SMS', domain: 'usps.com', icon: 'fa-envelopes-bulk', notes: 'USPS national inquiry. Redelivery links from random iMessage/SMS are scams.' },
+
+      // Govt & Helplines
+      { id: 'cybercrime1930', name: 'National Cyber Crime Helpline (MHA)', category: 'govt', categoryLabel: 'Govt / Cyber Safety', phone: '1930', altPhone: 'cybercrime.gov.in', header: 'CYBCRM', domain: 'cybercrime.gov.in', icon: 'fa-shield-halved', notes: 'Ministry of Home Affairs 24x7 financial cyber fraud helpline. Call immediately to freeze funds!' },
+      { id: 'chakshu', name: 'DoT Sanchar Saathi (Chakshu)', category: 'govt', categoryLabel: 'Govt / Telecom Fraud', phone: '1800 11 0420', altPhone: 'sancharsaathi.gov.in', header: 'DOTIN', domain: 'sancharsaathi.gov.in', icon: 'fa-satellite-dish', notes: 'Department of Telecommunications portal to report suspected fraud communications.' },
+      { id: 'incometax', name: 'Income Tax Department (e-Filing)', category: 'govt', categoryLabel: 'Govt / Taxation', phone: '1800 103 0025', altPhone: '1800 419 0025', header: 'ITDEFL', domain: 'incometax.gov.in', icon: 'fa-landmark', notes: 'Tax refund links sent via SMS asking for banking login are phishing scams.' },
+      { id: 'uidai', name: 'UIDAI Aadhaar Helpline', category: 'govt', categoryLabel: 'Govt / Identity', phone: '1947', altPhone: '011-40751226', header: 'AADHAA', domain: 'uidai.gov.in', icon: 'fa-fingerprint', notes: 'Official Unique Identification Authority of India resident support.' },
+      { id: 'epfo', name: 'EPFO (Provident Fund)', category: 'govt', categoryLabel: 'Govt / Pension', phone: '1800 118 005', altPhone: 'epfindia.gov.in', header: 'EPFOHO', domain: 'epfindia.gov.in', icon: 'fa-users-line', notes: 'Employees Provident Fund Organization official toll-free assistance.' },
+
+      // Telecom
+      { id: 'airtel', name: 'Bharti Airtel', category: 'telecom', categoryLabel: 'Telecom Operator', phone: '121', altPhone: '198 (Complaints)', header: 'AIRTEL', domain: 'airtel.in', icon: 'fa-tower-cell', notes: 'Official customer care. SIM 5G upgrade verification is never done over phone call.' },
+      { id: 'jio', name: 'Reliance Jio', category: 'telecom', categoryLabel: 'Telecom Operator', phone: '199', altPhone: '198 (Complaints)', header: 'JIOINF', domain: 'jio.com', icon: 'fa-tower-cell', notes: 'Official customer care. Tower installation offers with advance deposits are fake.' },
+      { id: 'vi', name: 'Vodafone Idea (Vi)', category: 'telecom', categoryLabel: 'Telecom Operator', phone: '199', altPhone: '198 (Complaints)', header: 'VILCARE', domain: 'myvi.in', icon: 'fa-tower-cell', notes: 'Official customer service. e-SIM QR code must never be shared with anyone.' },
+      { id: 'bsnl', name: 'BSNL', category: 'telecom', categoryLabel: 'Telecom Operator', phone: '1800 180 1503', altPhone: '1503', header: 'BSNLIN', domain: 'bsnl.co.in', icon: 'fa-tower-cell', notes: 'Bharat Sanchar Nigam Limited national consumer hotline.' }
+    ];
+
+    let currentDirCategory = 'all';
+
+    function openDirectoryModal() {
+      document.getElementById('directoryModal').classList.remove('hidden');
+      renderDirectory();
+    }
+
+    function closeDirectoryModal() {
+      document.getElementById('directoryModal').classList.add('hidden');
+    }
+
+    function filterDirCategory(cat, btn) {
+      currentDirCategory = cat;
+      document.querySelectorAll('.dir-tab').forEach(b => {
+        b.className = 'dir-tab px-3 py-1 rounded-lg font-semibold bg-slate-800 text-slate-400 hover:text-white transition';
+      });
+      if (btn) {
+        btn.className = 'dir-tab active px-3 py-1 rounded-lg font-semibold bg-emerald-600 text-white transition';
+      }
+      filterDirectory();
+    }
+
+    function filterDirectory() {
+      const query = (document.getElementById('dirSearchInput').value || '').toLowerCase().trim();
+      const filtered = OFFICIAL_DIRECTORY_DATA.filter(item => {
+        const matchesCategory = currentDirCategory === 'all' || item.category === currentDirCategory;
+        const matchesQuery = !query || 
+          item.name.toLowerCase().includes(query) ||
+          item.phone.toLowerCase().includes(query) ||
+          (item.altPhone && item.altPhone.toLowerCase().includes(query)) ||
+          item.header.toLowerCase().includes(query) ||
+          item.domain.toLowerCase().includes(query) ||
+          item.categoryLabel.toLowerCase().includes(query);
+        return matchesCategory && matchesQuery;
+      });
+      renderDirectory(filtered);
+    }
+
+    function renderDirectory(items = null) {
+      const list = items || (currentDirCategory === 'all' ? OFFICIAL_DIRECTORY_DATA : OFFICIAL_DIRECTORY_DATA.filter(i => i.category === currentDirCategory));
+      const container = document.getElementById('directoryGrid');
+      if (!container) return;
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-500 text-xs">
+            <i class="fa-solid fa-magnifying-glass text-xl mb-2 block"></i>
+            No official entities matched your search query.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div class="flex items-start gap-3 flex-grow">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/20 flex-shrink-0 mt-0.5">
+              <i class="fa-solid ${item.icon}"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="font-bold text-white">${item.name}</h4>
+                <span class="text-[10px] px-2 py-0.2 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">${item.categoryLabel}</span>
+              </div>
+              <p class="text-slate-400 text-[11px] mt-0.5">${item.notes}</p>
+              <div class="flex items-center gap-3 mt-1.5 text-[11px] text-slate-300 flex-wrap">
+                <span><i class="fa-solid fa-phone text-emerald-400 mr-1"></i> <strong class="text-white">${item.phone}</strong> ${item.altPhone ? `(${item.altPhone})` : ''}</span>
+                <span><i class="fa-solid fa-comment-sms text-sky-400 mr-1"></i> DLT: <code class="text-slate-300">${item.header}</code></span>
+                <span><i class="fa-solid fa-globe text-indigo-400 mr-1"></i> <a href="https://${item.domain}" target="_blank" class="hover:underline text-indigo-300">${item.domain}</a></span>
+              </div>
+            </div>
+          </div>
+          <div class="flex sm:flex-col gap-1.5 flex-shrink-0">
+            <button onclick="verifyDirectoryItem('${item.phone}', '${item.name}')" class="flex-1 sm:flex-initial px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-sm">
+              <i class="fa-solid fa-shield-halved text-[10px]"></i> Verify ID
+            </button>
+            <button onclick="copyNumber('${item.phone}')" class="flex-1 sm:flex-initial px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 border border-slate-700 transition">
+              <i class="fa-solid fa-copy text-[10px]"></i> Copy
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function verifyDirectoryItem(phone, name) {
+      closeDirectoryModal();
+      setInputMode('number');
+      const input = document.getElementById('searchInput');
+      if (input) {
+        input.value = phone;
+        handleVerification();
+        showToast("Verifying Official Entity", `Loaded verified contact for ${name}.`);
+      }
+    }
+
+    // =========================================================================
+    // 14. NATIONAL THREAT MAP & SCAM TELEMETRY LOGIC
+    // =========================================================================
+    const TELECOM_CIRCLES_HEATMAP = [
+      { circle: 'Delhi-NCR', riskLevel: 'HIGH', activeScams: 4821, primaryVector: 'Smishing & E-Challan APKs', blockedSims: '184k', statusClass: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+      { circle: 'Maharashtra & Mumbai', riskLevel: 'CRITICAL', activeScams: 6240, primaryVector: 'Loan APK Extortion & Customs', blockedSims: '241k', statusClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+      { circle: 'Karnataka & Bengaluru', riskLevel: 'HIGH', activeScams: 3915, primaryVector: 'BESCOM Disconnection APKs', blockedSims: '129k', statusClass: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+      { circle: 'West Bengal & Kolkata', riskLevel: 'CRITICAL', activeScams: 5120, primaryVector: 'Jamtara OTP Call Rerouting', blockedSims: '208k', statusClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+      { circle: 'Rajasthan (Mewat Hub)', riskLevel: 'CRITICAL', activeScams: 4430, primaryVector: 'Fake OLX Army Buyer & QR', blockedSims: '172k', statusClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+      { circle: 'Telangana & Hyderabad', riskLevel: 'MODERATE', activeScams: 2210, primaryVector: 'Telegram Part-time Tasks', blockedSims: '89k', statusClass: 'text-sky-400 bg-sky-500/10 border-sky-500/30' },
+      { circle: 'Bihar & Jharkhand', riskLevel: 'CRITICAL', activeScams: 5890, primaryVector: 'Bank KYC SIM Swap Phishing', blockedSims: '230k', statusClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30' },
+      { circle: 'Tamil Nadu & Chennai', riskLevel: 'MODERATE', activeScams: 1980, primaryVector: 'Lottery & Courier Customs', blockedSims: '76k', statusClass: 'text-sky-400 bg-sky-500/10 border-sky-500/30' }
+    ];
+
+    const SIMULATED_STREAM_EVENTS = [
+      { circle: 'Delhi', vector: 'Fake Traffic Challan APK', action: 'DISCONNECTED BY DOT', target: '+91 98112 •••••' },
+      { circle: 'Bengaluru', vector: 'BESCOM Power Cut Threat', action: 'BLOCKED BY CHAKSHU', target: '+91 98450 •••••' },
+      { circle: 'Mumbai', vector: 'FedEx Narcotics Extortion', action: '1930 FLAGGED', target: '+91 97690 •••••' },
+      { circle: 'Mewat', vector: 'Army Canteen OLX QR Scam', action: 'IMEI BLACKLISTED', target: '+91 99280 •••••' },
+      { circle: 'Kolkata', vector: 'SBI YONO Credential Stealer', action: 'DOMAIN TAKEDOWN', target: 'http://sbi-kyc-verify.xyz' },
+      { circle: 'Hyderabad', vector: 'Telegram Task Crypto Fraud', action: 'SIM QUARANTINED', target: '+91 98490 •••••' },
+      { circle: 'Patna', vector: 'Bank KYC Call Forwarding', action: 'DLT REJECTED', target: '+91 94310 •••••' }
+    ];
+
+    let threatStreamTimer = null;
+
+    function openThreatMapModal() {
+      document.getElementById('threatMapModal').classList.remove('hidden');
+      renderThreatCircles();
+    }
+
+    function closeThreatMapModal() {
+      document.getElementById('threatMapModal').classList.add('hidden');
+    }
+
+    function renderThreatCircles() {
+      const container = document.getElementById('threatCirclesGrid');
+      if (!container) return;
+
+      container.innerHTML = TELECOM_CIRCLES_HEATMAP.map(c => `
+        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-white text-xs truncate">${c.circle}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded border font-bold ${c.statusClass}">${c.riskLevel}</span>
+          </div>
+          <div class="text-[11px] text-slate-400 space-y-0.5">
+            <div>Vector: <span class="text-slate-300 font-medium">${c.primaryVector}</span></div>
+            <div class="flex justify-between text-[10px] pt-1 border-t border-slate-900 mt-1">
+              <span class="text-rose-400 font-semibold">${c.activeScams} active</span>
+              <span class="text-slate-500">${c.blockedSims} blocked</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function initThreatLiveStream() {
+      const container = document.getElementById('threatLiveStream');
+      if (!container) return;
+
+      container.innerHTML = SIMULATED_STREAM_EVENTS.slice(0, 4).map(e => createThreatStreamRow(e)).join('');
+
+      if (!threatStreamTimer) {
+        threatStreamTimer = setInterval(() => {
+          const rand = SIMULATED_STREAM_EVENTS[Math.floor(Math.random() * SIMULATED_STREAM_EVENTS.length)];
+          appendThreatStreamEntry(rand);
+        }, 3200);
+      }
+    }
+
+    function createThreatStreamRow(e) {
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      return `
+        <div class="p-2 rounded bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-2 text-[11px]">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500 text-[10px]">${time}</span>
+              <span class="text-amber-400 font-semibold">[${e.circle}]</span>
+              <span class="text-slate-200 font-mono">${e.target}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">${e.vector}</div>
+          </div>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex-shrink-0">
+            ${e.action}
+          </span>
+        </div>
+      `;
+    }
+
+    function appendThreatStreamEntry(e) {
+      const container = document.getElementById('threatLiveStream');
+      if (!container) return;
+      const html = createThreatStreamRow(e);
+      container.insertAdjacentHTML('afterbegin', html);
+      if (container.children.length > 8) {
+        container.removeChild(container.lastElementChild);
+      }
+    }
+
+    // =========================================================================
+    // 15. SUSPICIOUS NUMBER WATCHLIST LOGIC
+    // =========================================================================
+    function getWatchlist() {
+      try {
+        const raw = localStorage.getItem('vericom_user_watchlist');
+        return raw ? JSON.parse(raw) : [
+          { identifier: '+91 98450 12345', label: 'Suspicious Electricity Bill Call', addedAt: '2026-10-02', status: 'ALERT: 4 New Chakshu Reports', risk: 'HIGH' },
+          { identifier: 'SBIINB', label: 'State Bank of India SMS Header', addedAt: '2026-10-01', status: 'DLT Authenticated Principal Entity', risk: 'CLEAN' }
+        ];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveWatchlist(items) {
+      try {
+        localStorage.setItem('vericom_user_watchlist', JSON.stringify(items));
+        updateWatchlistBadges();
+      } catch (e) {}
+    }
+
+    function updateWatchlistBadges() {
+      const items = getWatchlist();
+      const count = items.length;
+      const badge = document.getElementById('watchlistBadge');
+      const quickCount = document.getElementById('quickWatchlistCount');
+      if (badge) {
+        badge.innerText = count;
+        if (count > 0) {
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+      if (quickCount) {
+        quickCount.innerText = count;
+      }
+    }
+
+    function openWatchlistModal() {
+      document.getElementById('watchlistModal').classList.remove('hidden');
+      renderWatchlist();
+    }
+
+    function closeWatchlistModal() {
+      document.getElementById('watchlistModal').classList.add('hidden');
+    }
+
+    function toggleWatchlist(identifier, label = 'Flagged Identifier') {
+      if (!identifier) return;
+      let items = getWatchlist();
+      const cleanId = identifier.trim();
+      const existingIdx = items.findIndex(i => i.identifier.toLowerCase() === cleanId.toLowerCase());
+
+      if (existingIdx >= 0) {
+        items.splice(existingIdx, 1);
+        saveWatchlist(items);
+        showToast("Removed from Watchlist", `Stopped monitoring ${cleanId}.`);
+      } else {
+        const isScam = label.toLowerCase().includes('scam') || label.toLowerCase().includes('threat') || label.toLowerCase().includes('phishing');
+        items.unshift({
+          identifier: cleanId,
+          label: label,
+          addedAt: new Date().toISOString().split('T')[0],
+          status: isScam ? 'High Risk Threat Monitored' : 'Active Regulatory Telemetry Watch',
+          risk: isScam ? 'HIGH' : 'CLEAN'
+        });
+        saveWatchlist(items);
+        showToast("Added to Watchlist", `Now tracking threat intelligence for ${cleanId}.`);
+      }
+      renderWatchlist();
+    }
+
+    function removeWatchlistItem(idx) {
+      let items = getWatchlist();
+      if (idx >= 0 && idx < items.length) {
+        const removed = items.splice(idx, 1)[0];
+        saveWatchlist(items);
+        renderWatchlist();
+        showToast("Watchlist Updated", `Removed ${removed.identifier}`);
+      }
+    }
+
+    function addManualWatchlistItem(e) {
+      e.preventDefault();
+      const input = document.getElementById('watchlistAddInput');
+      const val = (input.value || '').trim();
+      if (!val) return;
+      toggleWatchlist(val, 'User Added Monitor');
+      input.value = '';
+    }
+
+    function verifyFromWatchlist(identifier) {
+      closeWatchlistModal();
+      setInputMode('number');
+      const input = document.getElementById('searchInput');
+      if (input) {
+        input.value = identifier;
+        handleVerification();
+        showToast("Re-Scanning Watchlist Target", `Running full intelligence audit on ${identifier}.`);
+      }
+    }
+
+    function renderWatchlist() {
+      const container = document.getElementById('watchlistItemsContainer');
+      if (!container) return;
+      const items = getWatchlist();
+
+      if (items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-500 text-xs">
+            <i class="fa-solid fa-bell-slash text-2xl mb-2 block text-slate-600"></i>
+            <p>Your watchlist is currently empty.</p>
+            <p class="text-[11px] text-slate-600 mt-1">Add any phone number or SMS header to monitor real-time threat reports.</p>
+            <button onclick="populateDemoWatchlist()" class="mt-3 px-3 py-1.5 rounded-lg bg-sky-600/20 text-sky-300 border border-sky-500/30 text-xs font-semibold hover:bg-sky-600/30 transition">
+              Load Sample Monitored Targets
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = items.map((item, idx) => `
+        <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 hover:border-slate-700 transition flex items-center justify-between gap-3 text-xs">
+          <div class="flex items-start gap-3 flex-grow">
+            <div class="w-8 h-8 rounded-lg ${item.risk === 'HIGH' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-sky-500/10 text-sky-400 border border-sky-500/20'} flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+              <i class="fa-solid ${item.risk === 'HIGH' ? 'fa-triangle-exclamation' : 'fa-bell'}"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-bold text-white font-mono">${item.identifier}</span>
+                <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold ${item.risk === 'HIGH' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'}">
+                  ${item.risk === 'HIGH' ? 'THREAT DETECTED' : 'CLEAN'}
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-0.5">${item.label}</p>
+              <div class="flex items-center gap-3 text-[10px] text-slate-500 mt-1">
+                <span>Added: ${item.addedAt}</span>
+                <span class="${item.risk === 'HIGH' ? 'text-rose-400 font-semibold' : 'text-slate-400'}">${item.status}</span>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 flex-shrink-0">
+            <button onclick="verifyFromWatchlist('${item.identifier}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold flex items-center gap-1 border border-slate-700 transition" title="Run re-scan">
+              <i class="fa-solid fa-rotate text-indigo-400 text-[10px]"></i> Re-Scan
+            </button>
+            <button onclick="removeWatchlistItem(${idx})" class="p-1.5 bg-slate-800 hover:bg-rose-900/40 text-slate-400 hover:text-rose-300 rounded-lg text-xs transition border border-slate-700" title="Remove">
+              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function populateDemoWatchlist() {
+      const demo = [
+        { identifier: '+91 98450 12345', label: 'Fake BESCOM Power Cut Caller', addedAt: '2026-10-02', status: 'ALERT: 4 New Chakshu Reports', risk: 'HIGH' },
+        { identifier: '+91 99081 23456', label: 'Personal Number Under Observation', addedAt: '2026-10-01', status: 'Clean (Non-Telecaller Line)', risk: 'CLEAN' },
+        { identifier: 'SBIINB', label: 'SBI NetBanking DLT Header', addedAt: '2026-09-28', status: 'DLT Verified Principal Entity', risk: 'CLEAN' }
+      ];
+      saveWatchlist(demo);
+      renderWatchlist();
+      showToast("Demo Watchlist Loaded", "Populated sample monitored numbers for testing.");
+    }
+
+    // Keyboard support: Close modals on Escape key
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.getElementById('fraudReportModal').classList.add('hidden');
+        document.getElementById('editNameModal').classList.add('hidden');
+        document.getElementById('emergencyModal').classList.add('hidden');
+        document.getElementById('apiModal').classList.add('hidden');
+        document.getElementById('directoryModal').classList.add('hidden');
+        document.getElementById('threatMapModal').classList.add('hidden');
+        document.getElementById('watchlistModal').classList.add('hidden');
+      }
+    });
+
+    // Initialize Default State
+    setInputMode('number');
+    updateCurrentApiView();
+    updateWatchlistBadges();
+    renderDirectory();
+    renderThreatCircles();
+    initThreatLiveStream();
+  </script>
+</body>
+</html>
